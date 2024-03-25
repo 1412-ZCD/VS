@@ -1,0 +1,89 @@
+ public static class SqlsugarSetup
+ {
+     public static void AddSqlsugarSetup(this IServiceCollection services)
+     {
+         //如果多个数数据库传 List<ConnectionConfig>
+         var configConnection = new ConnectionConfig()
+         {
+             DbType = SqlSugar.DbType.PostgreSQL,
+             ConnectionString = "PORT=5432;DATABASE=test_3;HOST=127.0.0.1;PASSWORD=1412;USER ID=postgres;",
+             IsAutoCloseConnection = true,
+         };
+
+         SqlSugarScope sqlSugar = new SqlSugarScope(configConnection,
+             db =>
+             {
+                 //单例参数配置，所有上下文生效
+                 db.Aop.OnLogExecuting = (sql, pars) =>
+                 {
+                     //Console.WriteLine(sql);//输出sql
+                 };
+             });
+
+         //单例注入
+         services.AddSingleton<ISqlSugarClient>(sqlSugar);//这边是SqlSugarScope用AddSingleton
+     }
+ }
+
+
+
+
+
+[SugarTable("books")]
+
+
+[SugarColumn(ColumnName = "id", IsPrimaryKey = true, IsIdentity = true)]
+public int Id { get; set; }
+
+[SugarColumn(ColumnName = "book_name", Length = 255, ColumnDescription = "图书名称")]
+public string BookName { get; set; }
+
+[SugarColumn(ColumnName = "book_number", Length = 20, ColumnDescription = "图书号")]
+public string BookNumber { get; set; }
+
+[SugarColumn(ColumnName = "unit_price", Length = 8, DecimalDigits = 2, ColumnDescription = "单价")]
+public decimal UnitPrice { get; set; }
+
+[SugarColumn(ColumnName = "author", Length = 100, ColumnDescription = "作者")]
+public string Author { get; set; }
+
+[SugarColumn(ColumnName = "press", Length = 100, ColumnDescription = "出版社")]
+public string Press { get; set; }
+
+[SugarColumn(ColumnName = "publication_date", ColumnDescription = "出版日期")]
+public string PublicationDate { get; set; }
+
+[SugarColumn(ColumnName = "press_phone", Length = 50, ColumnDescription = "出版社电话")]
+public string PressPhone { get; set; }
+
+[SugarColumn(ColumnName = "press_website", Length = 100, ColumnDescription = "出版社网站")]
+public string PressWebsite { get; set; }
+
+[SugarColumn(ColumnName = "created_time", ColumnDescription = "创建时间")]
+public DateTime CreatedTime { get; set; }
+
+[SugarColumn(ColumnName = "creater", Length = 20, ColumnDescription = "创建人")]
+public string Creater { get; set; }
+
+
+
+
+ [STAThread]
+ static void Main()
+ {
+
+     Serve.RunNative(services =>
+     {
+
+         services.AddSqlsugarSetup();
+         services.AddTransient<IBookService, BookService>();
+     }, includeWeb: false);
+     // To customize application configuration such as set high DPI settings or default font,
+     // see https://aka.ms/applicationconfiguration.
+     ApplicationConfiguration.Initialize();
+     //Application.Run(new Form1());
+     System.Windows.Forms.Application.Run(Native.CreateInstance<femBooks>());
+ }
+
+
+结束
