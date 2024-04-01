@@ -1,0 +1,330 @@
+frmBook
+
+
+private void btnClear_Click(object sender, EventArgs e)
+{
+    foreach (Control c in groupBox1.Controls)
+    {
+        if (c is TextBox)
+        {
+            ((TextBox)c).Clear();
+        }
+        if (c is ComboBox)
+        {
+            ((ComboBox)c).SelectedIndex = -1;
+        }
+    }
+}
+
+private void btnInsert_Click(object sender, EventArgs e)
+{
+    var frm = Native.CreateInstance<frmBooksDetails>();
+    frm.pId = 0;
+    frm.Show();
+}
+
+private void btnUpdate_Click(object sender, EventArgs e)
+{
+    var currentRow = dgvBooks.CurrentRow;
+    if (currentRow == null)
+    {
+        MessageBox.Show("请选择要操作的数据");
+        return;
+    }
+    var pId = Convert.ToInt32(currentRow.Cells["colId"].Value);
+    var frm = Native.CreateInstance<frmBooksDetails>();
+    frm.pId = pId;
+    frm.Show();
+}
+
+private async void btnDelete_Click(object sender, EventArgs e)
+{
+    var currentRow = dgvBooks.CurrentRow;
+    if (currentRow == null)
+    {
+        MessageBox.Show("请选择要操作的数据");
+        return;
+    }
+    var pId = Convert.ToInt32(currentRow.Cells["colId"].Value);
+
+    if (await _bookService.DeleteBookAsync(pId))
+    {
+        MessageBox.Show("删除成功");
+        await QueryAsync();
+    }
+    else
+    {
+        MessageBox.Show("删除失败");
+    }
+}
+
+
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+frmBooksDetails
+
+private readonly IBookService _bookService;
+public int pId = 0;
+public frmBookDetails(IBookService bookService)
+{
+    InitializeComponent();
+
+    _bookService = bookService;
+    Debug.WriteLine(_bookService.GetHashCode());
+}
+
+protected override async void OnLoad(EventArgs e)
+{
+    base.OnLoad(e);
+
+
+
+
+    if (pId == 0)
+    {
+        btnOperator.Text = "添加";
+    }
+    else
+    {
+        btnOperator.Text = "修改";
+
+        string format = "YYYY-MM-dd-HH-mm-ss";
+
+        var book = await _bookService.GetBooksAsync(pId);
+        tbBookName.Text = book?.BookName;
+        tbBookNumber.Text = book?.BookNumber;
+        tbBookPrice.Text = book?.UnitPrice.ToString();
+        tbBookAuthor.Text = book?.Author;
+        tbBookPress.Text = book?.Press;
+        tbBookPublicationDate.Text = book?.PublicationDate;
+        tbBookPressNumber.Text = book?.PressPhone;
+        tbBookPressWeb.Text = book?.PressWebsite;
+        tbBookcreatedTime.Text = book?.CreatedTime.ToString();
+        tbBookCreater.Text = book?.Creater;
+
+    }
+}
+
+
+btnOperator
+
+var frmBooks = System.Windows.Forms.Application.OpenForms.OfType<frmBooks>().FirstOrDefault();
+/*if (frmBooks != null)
+{
+    await frmBooks.QueryAsync_2();
+}*/
+
+if (pId == 0)
+{
+    var bookName = tbBookName.Text.Trim();
+    var bookNumber = tbBookNumber.Text.Trim();
+    var bookPrime = int.Parse(tbBookPrice.Text.Trim());
+    var bookAuthor = tbBookAuthor.Text.Trim();
+    var bookPress = tbBookPress.Text.Trim();
+    var bookPublicationDate = tbBookPublicationDate.Text.Trim();
+    var bookPressNumber = tbBookPressNumber.Text.Trim();
+    var bookPressWeb = tbBookPressWeb.Text.Trim();
+    var bookCreatedTime = DateTime.Parse(tbBookcreatedTime.Text.Trim());
+    var bookCreater = tbBookCreater.Text.Trim();
+
+    var ret = await _bookService.AddBookAsync(bookName, bookNumber
+       , bookPrime, bookAuthor
+       , bookPress, bookPublicationDate
+       , bookPressNumber, bookPressWeb
+       , bookCreatedTime, bookCreater);
+
+    if (ret)
+    {
+        MessageBox.Show("添加成功");
+
+        await frmBooks!.QueryAsync();
+
+    }
+    else
+    {
+        MessageBox.Show("添加失败");
+    }
+}
+else
+{
+    var bookName = tbBookName.Text.Trim();
+    var bookNumber = tbBookNumber.Text.Trim();
+    var bookPrime = decimal.Parse(tbBookPrice.Text.Trim());
+    var bookAuthor = tbBookAuthor.Text.Trim();
+    var bookPress = tbBookPress.Text.Trim();
+    var bookPublicationDate = tbBookPublicationDate.Text.Trim();
+    var bookPressNumber = tbBookPressNumber.Text.Trim();
+    var bookPressWeb = tbBookPressWeb.Text.Trim();
+    var bookCreatedTime = DateTime.Parse(tbBookcreatedTime.Text.Trim());
+    var bookCreater = tbBookCreater.Text.Trim();
+
+    var ret = await _bookService.UpdateBookAsync(pId, bookName, bookNumber
+       , bookPrime, bookAuthor
+       , bookPress, bookPublicationDate
+       , bookPressNumber, bookPressWeb
+       , bookCreatedTime, bookCreater);
+
+    if (ret)
+    {
+        MessageBox.Show("修改成功");
+
+        await frmBooks!.QueryAsync();
+
+    }
+    else
+    {
+        MessageBox.Show("修改失败");
+    }
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+public class TestBookService //: IClassFixture<IBookService>
+{
+    private readonly IBookService _bookService; 
+    public TestBookService(IBookService bookService) 
+    {
+        _bookService = bookService;
+    }
+
+    [Fact]
+    public async void Test_GetBooksAsync()
+    {
+        var books = await _bookService.GetBookAsync();
+        Assert.NotNull(books);
+    }
+
+}
+
+public class TestProgram : TestStartup
+{
+
+    public TestProgram(IMessageSink messageSink) : base(messageSink)
+    {
+        // 初始化 Furion
+        Serve.RunNative(services => {
+
+            services.AddSqlsugarSetup();
+            services.AddSingleton<IBookService, BookService>();
+
+        }, includeWeb: false);
+
+    }
+}
+
+[assembly: TestFramework("MIS.Test.TestProgram", "MIS.Test")]
+
+
+[Fact]
+public void Test1()
+{
+    Assert.Equal(2, 1 + 1);
+}
+[Fact]
+public void Test2()
+{
+    Assert.Equal(26, 14 + 12);
+    Assert.Equal(24, 7 + 17);
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+
+BookService
+
+public async Task<Book> GetBooksAsync(int id)
+{
+    //return await _db.Queryable<Book>().InSingleAsync(id);
+    return await _db.Queryable<Book>().SingleAsync(it => it.Id == id);
+
+
+}
+
+public void Dispose()
+{
+    _db.Dispose();
+}
+
+public async Task<bool> AddBookAsync(string bookName, string bookNumber
+  , decimal unitPrice, string author
+  , string press, string publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creater)
+{
+    var book = new Book();
+    book.BookName = bookName;
+    book.BookNumber = bookNumber;
+    book.UnitPrice = unitPrice;
+    book.Author = author;
+    book.Press = press;
+    book.PublicationDate = publicationDate;
+    book.PressPhone = pressPhone;
+    book.PressWebsite = pressWeb;
+    book.CreatedTime = CreatedTime;
+    book.Creater = creater;
+
+    var ret = await _db.Insertable(book).ExecuteCommandAsync();
+    if(ret == 1)
+    {
+        return true;
+    }
+    return false;
+}
+
+public async Task<bool> UpdateBookAsync(int id, string bookName, string bookNumber
+  , decimal unitPrice, string author
+  , string press, string publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creater)
+{
+    var book = new Book();
+    book.Id = id;
+    book.BookName = bookName;
+    book.BookNumber = bookNumber;
+    book.UnitPrice = unitPrice;
+    book.Author = author;
+    book.Press = press;
+    book.PublicationDate = publicationDate;
+    book.PressWebsite = pressWeb;
+    book.PressPhone = pressPhone;
+    book.CreatedTime = CreatedTime;
+    book.Creater = creater;
+
+    var ret = await _db.Updateable(book).ExecuteCommandAsync();
+    if (ret == 1)
+    {
+        return true;
+    }
+    return false;
+
+}
+
+public async Task<bool> DeleteBookAsync(int id)
+{
+    var ret = await _db.Deleteable<Book>().In(id).ExecuteCommandAsync();
+    if (ret == 1) { return true; }
+    return false;
+}
+
+
+IBookService
+
+Task<Book> GetBooksAsync(int id);
+
+Task<bool> AddBookAsync(string bookName, string bookNumber
+  , decimal unitPrice, string author
+  , string press, string publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creater);
+
+Task<bool> UpdateBookAsync(int id, string bookName, string bookNumber
+  , decimal unitPrice, string author
+  , string press, string publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creater);
+
+Task<bool> DeleteBookAsync(int id);
+
+
+猪鼻了 神志不清了hh
