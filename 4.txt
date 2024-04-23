@@ -1,0 +1,349 @@
+ 首先对观看前几期c#视频的观众说声对不起，项目做出来的效果一塌糊涂，没有进行严谨地测试，细节方面也是没有处理到位，太过自大、不负责任，被老师批评完，正在反思。
+提醒大家学习是自己的事，是一生都要进行的事情。
+此次视频会对此前项目进行小部分修改与完善，同时会带有本人对部分相关代码的理解。
+时刻提醒自己，要 “批评与自我批评”
+
+
+
+
+【事后总结：单元测试做的稀烂，特判一生之敌，做的非常简单，但实践起来，哪怕是复制代码也很废时间，爆了
+不好好看代码没删注释的人有难了！！！！！噔噔噔！！！！！！！！！！！！！！！！！！！！！！！！！！！】
+
+
+
+
+
+单元测试自己再多写几个试一下，主包这里可能出错了
+
+首次运行全点信任，有些浏览器会出现不安全的警告导致无法访问，可能过一段时间就好了？
+
+https://localhost:5001/api/book/book  这个是url网址，接下来都是通过这个来对数据进行增删改查，其中最后的book就是[Route("book")]定义的名字， 端口5001可以修改
+
+
+ //"Kestrel": {
+  //  "Endpoints": {
+  //    "Http": {
+  //      "Url": "http://*:5010"//改成自己的
+  //    },
+  //    "Https": {
+  //      "Url": "http://*:5011"//改成自己的
+  //    }
+  //  }
+  //}
+
+btnLogin
+
+private async void btnLogin_Click(object sender, EventArgs e)
+{
+    var account = tbAccount.Text.Trim();
+    var password = tbPassword.Text.Trim();
+    if (account == "" || password == "")
+    {
+        MessageBox.Show("密码和账号不能为空！");
+        return;
+    }
+    else
+    {
+        var ret = await _userService.LoginAsync(account, password);
+        if (ret == true)
+        {
+            MessageBox.Show("登录成功！");
+            Hide();
+            var frm = Native.CreateInstance<frmBooks>();
+            frm.Show();
+
+
+        }
+        else
+        {
+            MessageBox.Show("账号或密码错误！");
+        }
+
+    }
+}
+
+
+LoginAsync
+
+public async Task<bool> LoginAsync(string account, string password)
+{
+    return await _db.Queryable<User>().Where(it => it.Account == account
+    && it.Password == password).AnyAsync();
+   
+}
+
+
+btnQuit
+
+private void btnQuit_Click(object sender, EventArgs e)
+{
+    System.Environment.Exit(0);
+}
+
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+WebApiBookService 
+
+ public WebApiBookService() { }
+
+ public async Task<Book> GetBooksAsync(int _id)
+{
+    var response = await "url"
+        .SetBody(new
+        {
+            id = _id
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<BaseResponse<Book>>();
+    return response.data;
+}
+
+public async Task<List<Book>> GetBookAsync()
+{
+    var response = await "url"
+        .PostAsAsync<BaseResponse<List<Book>>>();
+    return response.data;
+}
+
+public async Task<List<Book>> GetBooksAsync(string _bookNumber
+     , string _bookName
+     , string _author)
+{
+    var response = await "url"
+        .SetBody(new
+        {
+            bookNumber = _bookNumber,
+            bookName = _bookName,
+            author = _author
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<BaseResponse<List<Book>>>();
+    return response.data;
+}
+
+public async Task<bool> AddBookAsync(string _bookName, string _bookNumber
+  , decimal _unitPrice, string _author
+  , string _press, DateTime _publicationDate
+  , string _pressPhone, string _pressWeb
+  , DateTime _CreatedTime, string _creater)
+{
+    var response = await "url"
+        .SetBody(new
+        {
+            bookName = _bookName,
+            bookNumber = _bookNumber,
+            unitPrice = _unitPrice,
+            author = _author,
+            press = _press,
+            publicationDate = _publicationDate,
+            pressPhone = _pressPhone,
+            pressWeb = _pressWeb,
+            CreatedTime = _CreatedTime,
+            creater = _creater
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<BaseResponse<Book>>();
+    if (response != null )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }      
+}
+
+public async Task<bool> UpdateBookAsync(int _id, string _bookName, string _bookNumber
+  , decimal _unitPrice, string _author
+  , string _press, DateTime _publicationDate
+  , string _pressPhone, string _pressWeb
+  , DateTime _CreatedTime, string _creater)
+{
+    var response = await "url"
+        .SetBody(new
+        {
+            id = _id,
+            bookName = _bookName,
+            bookNumber = _bookNumber,
+            unitPrice = _unitPrice,
+            author = _author,
+            press = _press,
+            publicationDate = _publicationDate,
+            pressPhone = _pressPhone,
+            pressWeb = _pressWeb,
+            CreatedTime = _CreatedTime,
+            creater = _creater
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<BaseResponse<Book>>();
+    if (response != null)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+public async Task<bool> DeleteBookAsync(int _id)
+{
+    var response = await "url"
+    .SetBody(new
+        {
+            id = _id
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<BaseResponse<Book>>();
+    if (response != null)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+200表示成功
+日期格式不对会报错
+这条数据是我刚刚在web端创建的
+现在我们通过web端删除id=1的数据，删除成功
+我们也可以通过web的books查询所有数据
+这次视频错误有许多，单元测试没完成，web端一些特判没有设置，主要是不会hhh
+，hh就这样吧
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+
+BookController
+
+
+private readonly IBookService _bookService;
+
+public BookController(IBookService bookService)
+{
+    _bookService = bookService;
+}
+
+[HttpPost]
+[Route("book")]//名字自己定义哦~
+public async Task<Book> GetBook([FromForm] int id)
+{
+    return await _bookService.GetBooksAsync(id);
+}
+
+[HttpPost]
+[Route("books")]//字自己定义哦~
+public async Task<List<Book>> GetBookAsync()
+{
+    return await _bookService.GetBookAsync();
+}
+
+[HttpPost]
+[Route("series")]//自己定义哦~
+public async Task<List<Book>> GetBooksAsync(string bookNumber
+     , string bookName
+     , string author)
+{
+    return await _bookService.GetBooksAsync(bookNumber, bookName, author);
+}
+
+[HttpPost]
+[Route("addbook")]//己定义哦~
+public async Task<bool> AddBookAsync(string bookName, string bookNumber
+  , decimal unitPrice, string author
+  , string press, DateTime publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creater)
+{
+    return await _bookService.AddBookAsync(bookName, bookNumber, unitPrice
+        , author, press, publicationDate
+        , pressPhone, pressWeb, CreatedTime, creater);
+}
+
+[HttpPost]
+[Route("updatebook")]//定义哦~
+public async Task<bool> UpdateBookAsync(int id, string bookName, string bookNumber
+  , decimal unitPrice, string author
+  , string press, DateTime publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creater)
+{
+    return await _bookService.UpdateBookAsync(id, bookName, bookNumber, unitPrice
+        , author, press, publicationDate
+        , pressPhone, pressWeb, CreatedTime, creater);
+}
+
+[HttpPost]
+[Route("deletebook")]//义哦~
+public async Task<bool> DeleteBookAsync(int id)
+{
+    return await _bookService.DeleteBookAsync(id);
+}
+
+
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+TestBookService
+
+private readonly IBookService _bookService;
+public TestBookService(IBookService bookService)
+{
+    _bookService = bookService;
+}
+
+[Fact]
+public async void Test_GetBooksAsync()
+{
+    var books = await _bookService.GetBookAsync();
+    Assert.NotNull(books);
+}
+
+[Fact]
+public async void Test_GetBooksAsyncNew()
+{
+//自己的数据
+    var books = await _bookService.GetBooksAsync("3", "母猪产后护理", "CN");
+    Assert.NotNull(books);
+}
+
+
+[Fact]
+public async void Test_AddBookAsync(){
+    DateTime dateTime_1 = DateTime.Now;
+    DateTime dateTime_2 = DateTime.Now;
+//数据改成自己的哦~
+    var ret = await _bookService.AddBookAsync("如何在10天内成为音游大神", "4"
+  , 114514, "音游王"
+  , "SAGE", dateTime_1
+  , "114514", "www"
+  , dateTime_2, "ZCD");
+    Assert.True(ret);
+
+}
+
+[Fact]
+public async void Test_UpdateBookAsync()
+{
+    DateTime dateTime_1 = DateTime.Now;
+    DateTime dateTime_2 = DateTime.Now;
+//数据自己
+    var ret = await _bookService.UpdateBookAsync(1, "77", "77"
+  , 1, "77"
+  , "44", dateTime_1
+  , "44", "44"
+  , dateTime_2, "33");
+    Assert.True(ret);
+}
+
+[Fact]
+public async void Test_DeleteBookAsync()
+{
+//主键自己定，前提主键必须有
+    var ret = await _bookService.DeleteBookAsync(2);
+    Assert.True(ret);
+}
+
+[Fact]
+public async void Test_GetBookByIdAsync()
+{
+//自己定，前提主键必须有
+    var book = await _bookService.GetBooksAsync(3);
+    Assert.NotNull(book);
+}
