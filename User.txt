@@ -1,0 +1,598 @@
+SerializationClass
+
+public class SerializationClass
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public int statusCode { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool data { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool succeeded { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int timestamp { get; set; }
+}
+
+..........................................................................................
+
+SerializationClassT
+
+
+public class SerializationClassT<T>
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public int statusCode { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public T data { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool succeeded { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int timestamp { get; set; }
+}
+
+.......................................................................................
+
+frmLogin
+
+
+public partial class frmLogin : Form
+{
+
+    public static string creatorName = null;
+    public frmLogin()
+    {
+        InitializeComponent();
+    }
+
+    private async void btnLogin_Click(object sender, EventArgs e)
+    {
+        var _account = tbAccount.Text.Trim();
+        var _password = tbPassword.Text.Trim();
+        if (_account == "" || _password == "")
+        {
+            MessageBox.Show("密码或账号不能为空！");
+            return;
+        }
+        else
+        {
+            var response_1 = await "http://localhost:5001/api/user/user-login"
+            .SetBody(new
+            {
+                account = _account,
+                password = _password
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClass>();
+
+            var response_2 = await "http://localhost:5001/api/user/get-tempuser-by-name"
+            .SetBody(new
+            {
+                account = _account,
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<TempUser>>();
+
+            if (response_1.data)
+            {
+                creatorName = _account;
+                MessageBox.Show("登录成功！");
+                Hide();
+                var frm = Native.CreateInstance<frmBooks>();
+                frm.Show();
+            }
+            else if(response_2.data != null)
+            {
+                MessageBox.Show("该账号还在审核中,请稍后尝试登录。");
+            }
+            else
+            {
+                MessageBox.Show("账号或密码错误！");
+            }
+        }
+    }
+
+    private void btnQuit_Click(object sender, EventArgs e)
+    {
+        System.Environment.Exit(0);
+    }
+
+    private void btnRegister_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmUserRegister>();
+        Hide();
+        frm.Show();
+    }
+}
+
+...........................................................................................
+
+frmUserRegister
+
+ public partial class frmUserRegister : Form
+ {
+     public frmUserRegister()
+     {
+         InitializeComponent();
+     }
+
+     private async void btnOK_ClickAsync(object sender, EventArgs e)
+     {
+         var _account = tbRaccount.Text.Trim();
+         var _password = tbRpassword.Text.Trim();
+         if (_account == "" || _password == "")
+         {
+             MessageBox.Show("密码或账号不能为空！");
+             return;
+         }
+         else
+         {
+             var ret = await "http://localhost:5001/api/user/register"
+             .SetBody(new
+             {
+                 account = _account,
+                 password = _password
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClass>();
+
+             if (ret.data)
+             {
+                 MessageBox.Show("注册成功,请等候审核！");
+                 var frm = Native.CreateInstance<frmLogin>();
+                 frm.Show();
+                 Close();
+             }
+             else
+             {
+                 MessageBox.Show("该账号已存在！");
+                 return;
+             }
+
+         }
+     }
+
+     private void btnReturn_Click(object sender, EventArgs e)
+     {
+         var frm = Native.CreateInstance<frmLogin>();
+         frm.Show();
+         Close();
+     }
+ }
+
+..........................................................................................
+
+frmBooks
+
+public partial class frmBooks : Form
+{
+    public frmBooks()
+    {
+        InitializeComponent();
+    }
+
+    public async void frmBooks_Load(object sender, EventArgs e)
+    {
+        await QueryAsync();
+    }
+
+    private void btnClear_Click(object sender, EventArgs e)
+    {
+        foreach (Control c in groupBox1.Controls)
+        {
+            if (c is TextBox)
+            {
+                ((TextBox)c).Clear();
+            }
+            if (c is ComboBox)
+            {
+                ((ComboBox)c).SelectedIndex = -1;
+            }
+        }
+    }
+
+    public async Task QueryAsync_2()
+    {
+        var books = await "http://localhost:5001/api/book/get_ctfnna3"
+        .SetBody(new
+        {
+            bookNumber = tbBookNumber.Text,
+            bookName = tbBookName.Text,
+            author = tbBookAuther.Text
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClassT<List<CtfBook>>>();
+        dgvBooks.DataSource = books.data;
+
+    }
+
+    public async Task QueryAsync()
+    {
+        var books = await "http://localhost:5001/api/book/get_ctfbooks"
+        .PostAsAsync<SerializationClassT<List<CtfBook>>>();
+        dgvBooks.DataSource = books.data;
+    }
+
+    private async void btnSelect_Click(object sender, EventArgs e)
+    {
+        await QueryAsync_2();
+    }
+
+  
+    private void btnQuit_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmLogin>();
+        frm.Show();
+        Close();
+    }
+
+    private void btnRecord_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmTempBooks>();
+        frm.Show();
+        Close();
+    }
+}
+
+...........................................................................................
+
+frmTempBooks
+
+ public partial class frmTempBooks : Form
+ {
+     Image approved = Properties.Resources.正确;
+     Image fail = Properties.Resources.错误;
+     public frmTempBooks()
+     {
+         InitializeComponent();
+     }
+
+     public async void frmTempBooks_Load(object sender, EventArgs e)
+     {
+         await QueryAsync();
+     }
+
+     public async Task QueryAsync()
+     {
+    	var _creater = frmLogin.creatorName;
+    	var books = await "http://localhost:5001/api/book/get_tempbooks_by_creator"
+    	.SetBody(new
+    	{
+        	Creater = _creater,
+    	}, "application/x-www-form-urlencoded")
+    	.PostAsAsync<SerializationClassT<List<TempBook>>>();
+    	dgvBooks.DataSource = books.data;
+
+    	foreach (DataGridViewRow row in dgvBooks.Rows)
+    	{
+
+        	var isbn = row.Cells["ColBookNumber"].Value.ToString();
+        	if (isbn == null) continue;
+        	var response = await "http://localhost:5001/api/book/get_ctfbook_by_isbn"
+        	.SetBody(new
+        	{
+            	bookNumber = isbn
+        	}, "application/x-www-form-urlencoded")
+      		.PostAsAsync<SerializationClassT<CtfBook>>();
+
+        	if (response.data != null)
+        	{
+            		row.Cells["ColImage"].Value = approved;
+       		}
+        	else
+        	{
+            		row.Cells["ColImage"].Value = fail;
+        	}
+    	}
+
+     }
+
+
+     private async void btnInsert_Click(object sender, EventArgs e)
+     {
+         var frm = Native.CreateInstance<frmBookDetails>();
+         frm.Show();
+         await QueryAsync();
+     }
+
+     private void btnUpdate_Click(object sender, EventArgs e)
+     {
+         var currentRow = dgvBooks.CurrentRow;
+         if (currentRow == null)
+         {
+             MessageBox.Show("请选择要操作的数据");
+             return;
+         }
+         var pId = Convert.ToInt32(currentRow.Cells["colId"].Value);
+         var frm = Native.CreateInstance<frmBookDetails>();
+         frm.pId = pId;
+         frm.Show();
+     }
+
+     private async void btnDelete_ClickAsync(object sender, EventArgs e)
+     {
+         var currentRow = dgvBooks.CurrentRow;
+         if (currentRow == null)
+         {
+             MessageBox.Show("请选择要操作的数据");
+             return;
+         }
+         var pId = Convert.ToInt32(currentRow.Cells["colId"].Value);
+
+         var response = await "http://localhost:5001/api/book/delete_tempbook"
+         .SetBody(new
+         {
+             id = pId
+         }, "application/x-www-form-urlencoded")
+         .PostAsAsync<SerializationClass>();
+
+         if (response.data)
+         {
+             MessageBox.Show("删除成功");
+             await QueryAsync();
+         }
+         else
+         {
+             MessageBox.Show("删除失败");
+         }
+     }
+
+     private void btnQuit_Click(object sender, EventArgs e)
+     {
+         var frm = Native.CreateInstance<frmBooks>();
+         frm.Show();
+         Close();
+     }
+ }
+
+...........................................................................................
+
+frmBookDetails
+
+public partial class frmBookDetails : Form
+{
+    public int pId = 0;
+    public frmBookDetails()
+    {
+        InitializeComponent();
+    }
+
+    protected override async void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        if (pId == 0)
+        {
+            btnOperator.Text = "添加";
+        }
+        else
+        {
+            btnOperator.Text = "修改";
+
+            var book = await "http://localhost:5001/api/book/get_tempbook_byid"
+            .SetBody(new
+            {
+                id = pId
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<TempBook>>();
+            tbBookName.Text = book?.data.BookName;
+            tbBookNumber.Text = book?.data.BookNumber;
+            tbBookPrice.Text = book?.data.UnitPrice.ToString();
+            tbBookAuthor.Text = book?.data.Author;
+            tbBookPress.Text = book?.data.Press;
+            dtpBookPublicationDate.Text = book?.data.PublicationDate.ToString();
+            tbBookPressNumber.Text = book?.data.PressPhone;
+            tbBookPressWeb.Text = book?.data.PressWebsite;
+            dtpBookcreatedTime.Text = book?.data.CreatedTime.ToString();
+            tbBookCreater.Text = book?.data.Creater;
+        }
+    }
+
+
+    private async void btnOperator_ClickAsync(object sender, EventArgs e)
+    {
+        var frmTempBooks = System.Windows.Forms.Application.OpenForms.OfType<frmTempBooks>().FirstOrDefault();
+
+        if (pId == 0)
+        {
+            decimal? _bookPrime;
+            decimal s;
+            if (string.IsNullOrEmpty(tbBookPrice.Text))
+            {
+                _bookPrime = null;
+            }
+            else
+            {
+                //s = decimal.Parse(tbBookPrice.Text);
+                if (decimal.TryParse(tbBookPrice.Text, out s))
+                {
+                    // 转换成功
+                    _bookPrime = s;
+                }
+                else
+                {
+                    //转换失败
+                    MessageBox.Show("单价行请输入有效数字！");
+                    return;
+                }
+            }
+
+            if (_bookPrime != null && Math.Abs(_bookPrime.Value) >= 10000000)
+            {
+                MessageBox.Show("单价超出正常价格！");
+                return;
+            }
+                var _bookName = tbBookName.Text.Trim();
+            var _bookNumber = tbBookNumber.Text.Trim();
+            //var bookPrime = decimal.Parse(tbBookPrice.Text.Trim());
+            var _bookAuthor = tbBookAuthor.Text.Trim();
+            var _bookPress = tbBookPress.Text.Trim();
+            var _bookPublicationDate = DateTime.Parse(dtpBookPublicationDate.Text.Trim());
+            var _bookPressNumber = tbBookPressNumber.Text.Trim();
+            var _bookPressWeb = tbBookPressWeb.Text.Trim();
+            var _bookCreatedTime = DateTime.Parse(dtpBookcreatedTime.Text.Trim());
+            var _bookCreater = tbBookCreater.Text.Trim();
+	    var _bookFeedBack = tbFeedBack.Text.Trim();
+
+
+            if (string.IsNullOrEmpty(_bookName))
+            {
+                MessageBox.Show("图书名不能为空！");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_bookNumber))
+            {
+                MessageBox.Show("书本编号不能为空！");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_bookAuthor))
+            {
+                MessageBox.Show("作者名不能为空！");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_bookCreater))
+            {
+                MessageBox.Show("创建人不能为空！");
+                return;
+            }
+
+            var ret = await "http://localhost:5001/api/book/add_tempbook"
+            .SetBody(new
+            { 
+                bookNumber = _bookNumber,
+                bookName = _bookName,
+                Author = _bookAuthor,
+                UnitPrime = _bookPrime,  
+                Press = _bookPress,
+                PublicationDate = _bookPublicationDate,
+                PressPhone = _bookPressNumber,
+                PressWeb = _bookPressWeb,
+                CreatedTime = _bookCreatedTime,
+                Creater = _bookCreater,
+		FeedBack = _bookFeedBack
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClass>();
+
+            if (ret.data)
+            {
+                MessageBox.Show("添加成功");
+		await frmTempBooks!.QueryAsync();
+            }
+            else
+            {
+                MessageBox.Show("添加失败,该图书编号已存在！");
+            }
+        }
+        else
+        {
+            decimal? _bookPrime;
+            decimal s;
+            if (string.IsNullOrEmpty(tbBookPrice.Text))
+            {
+                _bookPrime = null;
+            }
+            else
+            {
+                //s = decimal.Parse(tbBookPrice.Text);
+                if (decimal.TryParse(tbBookPrice.Text, out s))
+                {
+                    // 转换成功
+                    _bookPrime = s;
+                }
+                else
+                {
+                    //转换失败
+                    MessageBox.Show("单价行请输入有效数字！");
+                    return;
+                }
+            }
+
+            if (_bookPrime != null && Math.Abs(_bookPrime.Value) >= 10000000)
+            {
+                MessageBox.Show("单价超出正常价格！");
+                return;
+            }
+
+            var _bookName = tbBookName.Text.Trim();
+            var _bookNumber = tbBookNumber.Text.Trim();
+            //var bookPrime = decimal.Parse(tbBookPrice.Text.Trim());
+            var _bookAuthor = tbBookAuthor.Text.Trim();
+            var _bookPress = tbBookPress.Text.Trim();
+            var _bookPublicationDate = DateTime.Parse(dtpBookPublicationDate.Text.Trim());
+            var _bookPressNumber = tbBookPressNumber.Text.Trim();
+            var _bookPressWeb = tbBookPressWeb.Text.Trim();
+            var _bookCreatedTime = DateTime.Parse(dtpBookcreatedTime.Text.Trim());
+            var _bookCreater = tbBookCreater.Text.Trim();
+	    var _bookFeedBack = tbFeedBack.Text.Trim();
+	    
+
+            if (string.IsNullOrEmpty(_bookName))
+            {
+                MessageBox.Show("图书名不能为空！");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_bookNumber))
+            {
+                MessageBox.Show("书本编号不能为空！");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_bookAuthor))
+            {
+                MessageBox.Show("作者名不能为空！");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_bookCreater))
+            {
+                MessageBox.Show("创建人不能为空！");
+                return;
+            }
+
+            var ret = await "http://localhost:5001/api/book/update_tempbook"
+            .SetBody(new
+            {
+                bookName = _bookName,
+                bookNumber = _bookNumber,
+                bookPrime = _bookPrime,
+                bookAuthor = _bookAuthor,
+                bookPress = _bookPress,
+                bookPublicationDate = _bookPublicationDate,
+                bookPressNumber = _bookPressNumber,
+                bookPressWeb = _bookPressWeb,
+                bookCreatedTime = _bookCreatedTime,
+                bookCreater = _bookCreater,
+		FeedBack = _bookFeedBack
+
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClass>();
+
+            if (ret.data)
+            {
+                MessageBox.Show("修改成功");
+                await frmTempBooks!.QueryAsync();
+            }
+            else
+            {
+                MessageBox.Show("修改失败，该图书编号已存在！");
+            }
+        }
+    }
+}
+
+........................................................................................
+

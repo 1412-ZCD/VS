@@ -1,0 +1,862 @@
+SerializationClass
+
+public class SerializationClass
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public int statusCode { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool data { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool succeeded { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int timestamp { get; set; }
+}
+
+.......................................................................................
+
+SerializationClassT
+
+public class SerializationClassT<T>
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public int statusCode { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public T data { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool succeeded { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int timestamp { get; set; }
+}
+
+..........................................................................................
+
+CtfRegisterAsyncClass
+
+public class CtfRegisterAsyncClass
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public int statusCode { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public Data data { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool succeeded { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int timestamp { get; set; }
+}
+
+public class Data
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool data { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int code { get; set; }
+    /// <summary>
+    /// 审核通过
+    /// </summary>
+    public string message { get; set; }
+}
+
+.........................................................................................
+
+ExportCtfBooksDataWithSplitSheet
+
+[ExcelExporter(Name = "图书数据", TableStyle = OfficeOpenXml.Table.TableStyles.None, AutoFitAllColumn = true, MaxRowNumberOnASheet = 100)]
+public class ExportCtfBooksDataWithSplitSheet
+{
+    [ExporterHeader(DisplayName = "图书名称", IsAutoFit = true)]
+    public string BookName { get; set; }
+
+    [ExporterHeader(DisplayName = "图书编号", IsBold = true)]
+    public string BookNumber { get; set; }
+
+    [ExporterHeader(DisplayName = "单价", Format = "#,##0.00")]
+    public decimal? UnitPrime { get; set; }
+
+    [ExporterHeader(DisplayName = "作者")]
+    public string Author { get; set; }
+
+    [ExporterHeader(DisplayName = "出版社")]
+    public string Press { get; set; }
+
+    [ExporterHeader(DisplayName = "出版日期", Format = "yyyy-MM-dd HH:mm:ss")]
+    public DateTime PublicationDate { get; set; }
+
+    [ExporterHeader(DisplayName = "出版社电话")]
+    public string PressPhone { get; set; }
+
+    [ExporterHeader(DisplayName = "出版社网址")]
+    public string PressWebsite { get; set; }
+
+    [ExporterHeader(DisplayName = "创建时间", Format = "yyyy-MM-dd HH:mm:ss")]
+    public DateTime CreatedTime { get; set; }
+
+    [ExporterHeader(DisplayName = "创建人")]
+    public string Creator { get; set; }
+
+    [ExporterHeader(DisplayName = "认证时间", Format = "yyyy-MM-dd HH:mm:ss")]
+    public DateTime CertTime{ get; set; }
+
+    [ExporterHeader(DisplayName = "管理员")]
+    public string Administrator { get; set; }
+
+}
+
+.........................................................................................
+
+frmAdminLogin
+
+ public partial class frmAdminLogin : Form
+ {
+     public static string creatorName = null;
+     public frmAdminLogin()
+     {
+         InitializeComponent();
+     }
+
+     private async void btnLogin_Click(object sender, EventArgs e)
+     {
+         var _account = tbAccount.Text.Trim();
+         var _password = tbPassword.Text.Trim();
+         if (_account == "" || _password == "")
+         {
+             MessageBox.Show("密码或账号不能为空！");
+             return;
+         }
+         else
+         {
+             var response = await "http://localhost:5001/api/user/admin-login"
+             .SetBody(new
+             {
+                 account = _account,
+                 password = _password
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClass>();
+             if (response.data)
+             {
+                 creatorName = _account;
+                 MessageBox.Show("登录成功！");
+                 Hide();
+                 var frm = Native.CreateInstance<frmChoose>();
+                 frm.Show();
+             }
+             else
+             {
+                 MessageBox.Show("账号或密码错误！");
+             }
+         }
+     }
+
+
+     private void btnQuit_Click(object sender, EventArgs e)
+     {
+         System.Environment.Exit(0);
+
+     }
+ }
+
+..........................................................................................
+
+frmChoose
+
+public partial class frmChoose : Form
+{
+    public frmChoose()
+    {
+        InitializeComponent();
+    }
+
+    private void btnQuitAdmin_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmAdminLogin>();
+        frm.Show();
+        Close();
+    }
+
+    private void btnUserAdmin_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmUserAdmin>();
+        frm.Show();
+        Close();
+    }
+
+    private void btnBookAdmin_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmBookAdmin>();
+        frm.Show();
+        Close();
+    }
+}
+
+.........................................................................................
+
+frmUserAdmin
+
+ public partial class frmUserAdmin : Form
+{
+    List<int> _id = new List<int>();
+    public frmUserAdmin()
+    {
+        InitializeComponent();
+        dgvUser.CellValueChanged += new DataGridViewCellEventHandler(dgvUser_CellValueChanged);
+        dgvUser.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+        foreach (DataGridViewColumn item in this.dgvUser.Columns)
+        {
+            item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            item.SortMode = DataGridViewColumnSortMode.NotSortable;
+        }
+
+    }
+
+    public async void frmUserAdmin_Load(object sender, EventArgs e)
+    {
+        var response = await "http://localhost:5001/api/user/temp-user"
+            .PostAsAsync<SerializationClassT<List<TempUser>>>();
+
+        dgvUser.DataSource = response.data;
+    }
+
+    private async void btnOK_ClickAsync(object sender, EventArgs e)
+    {
+        var response = await "http://localhost:5001/api/user/temp-user"
+            .PostAsAsync<SerializationClassT<List<TempUser>>>();
+
+        dgvUser.DataSource = response.data;
+    }
+
+    private void btnReturn_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmChoose>();
+        frm.Show();
+        Close();
+    }
+
+    private void dgvUser_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+    {
+        if (e.ColumnIndex == dgvUser.Columns["ColCheck"].Index && e.RowIndex >= 0) 
+        {
+            if (dgvUser.Rows[e.RowIndex].Cells["ColCheck"] is DataGridViewCheckBoxCell)
+            {
+                if (dgvUser.Rows[e.RowIndex].Cells["ColId"].Value == null)
+                {
+                    MessageBox.Show("请勾选要操作的数据行！");
+                    return;
+                }
+                int cId = (int)dgvUser.Rows[e.RowIndex].Cells["ColId"].Value;
+                bool isChecked = (bool)dgvUser.Rows[e.RowIndex].Cells["ColCheck"].EditedFormattedValue;
+                if (isChecked)
+                {
+                    _id.Add(cId);
+
+                }
+                if(!isChecked && _id.Contains(cId))
+                {
+                    _id.Remove(cId);
+                }
+            }
+        }
+    }
+    
+    private void btnRecord_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmCtfUser>();
+        frm.Show();
+        Close();
+    }
+
+
+    private async void btnAccess_ClickAsync(object sender, EventArgs e)
+    {
+        if(_id.Count <= 0) 
+        {
+            MessageBox.Show("请勾选要操作的数据行！");
+            return;
+        }
+        int[] array = _id.ToArray();
+        _id.Clear();
+        foreach(int value in array)
+        {
+
+            var response = await "http://localhost:5001/api/user/temp-user-by-id"
+            .SetBody(new
+            {
+                id = value
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<TempUser>>();
+
+            if (response.data == null) return;
+
+            var ctf = await "http://localhost:5001/api/user/ctf-register"
+            .SetBody(new
+            {
+                account = response.data.Account,
+                password = response.data.Password
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<CtfRegisterAsyncClass>();
+
+            await "http://localhost:5001/api/user/deletetempuser"
+            .SetBody(new
+            {
+                id = value
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClass>();
+        }
+        MessageBox.Show("所选用户均已认证！");
+        var ret = await "http://localhost:5001/api/user/temp-user"
+            .PostAsAsync<SerializationClassT<List<TempUser>>>();
+
+        dgvUser.DataSource = ret.data;
+        return;
+    }
+}
+........................................................................................
+
+frmCtfUser
+
+public partial class frmCtfUser : Form
+{
+    public frmCtfUser()
+    {
+        InitializeComponent();
+ 
+    }
+
+    public async void frmCtfUser_Load(object sender, EventArgs e)
+    {
+        await QueryAsync();
+    }
+
+    private void btnReturn_Click(object sender, EventArgs e)
+    {
+        var frm = Native.CreateInstance<frmUserAdmin>();
+        frm.Show();
+        Close();
+    }
+
+    private void btnUpdate_Click(object sender, EventArgs e)
+    {
+        var currentRow = dgvCtfUser.CurrentRow;
+        if (currentRow == null)
+        {
+            MessageBox.Show("请选择要操作的数据");
+            return;
+        }
+        var pId = Convert.ToInt32(currentRow.Cells["ColId"].Value);
+        var frm = Native.CreateInstance<frmAlter>();
+        frm.pId = pId;
+        frm.Show();
+    }
+
+    private void btnDelete_Click(object sender, EventArgs e)
+    {
+        var currentRow = dgvCtfUser.CurrentRow;
+        if (currentRow == null)
+        {
+            MessageBox.Show("请选择要操作的数据");
+            return;
+        }
+
+        var pId = Convert.ToInt32(currentRow.Cells["ColId"].Value);
+
+
+        await "http://localhost:5001/api/user/deletectfuser"
+        .SetBody(new
+        {
+            id = pId
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClass>();
+        MessageBox.Show("删除成功");
+        var response = await "http://localhost:5001/api/user/get-ctfusers"
+        .PostAsAsync<SerializationClassT<List<CtfUser>>>();
+        dgvCtfUser.DataSource = response.data;
+
+    }
+
+    public async Task QueryAsync()
+    {
+        var response = await "http://localhost:5001/api/user/get-ctfusers"
+            .PostAsAsync<SerializationClassT<List<CtfUser>>>();
+        dgvCtfUser.DataSource = response.data;
+    }
+}
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+
+frmAlter
+
+
+    public partial class frmAlter : Form
+    {
+        public int pId = 0;
+        public static string creatorName = null;
+        public frmAlter()
+        {
+            InitializeComponent();
+        }
+
+
+        protected override async void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            var Ctfuser = await "http://localhost:5012/api/user/ctf-user-by-id"
+            .SetBody(new
+            {
+                id = pId
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<GetCtfUserByIdAsyncClass<CtfUser>>();
+            tbaccount.Text = Ctfuser.data.C_Account;
+            tbpassword.Text = Ctfuser.data.C_Password;
+
+        }
+
+
+        private void btnReturn_Click(object sender, EventArgs e)
+        {
+            var frm = Native.CreateInstance<frmUserAdmin>();
+            frm.Show();
+            Close();
+        }
+
+        private async void btnOK_Click(object sender, EventArgs e)
+        {
+            var _id = pId;
+            var _account = tbaccount.Text.Trim();
+            var _password = tbpassword.Text.Trim();
+            if (string.IsNullOrEmpty(_password))
+            {
+                MessageBox.Show("密码不能为空！");
+                return;
+            }
+            await "http://localhost:5012/api/user/update-ctfuser"
+            .SetBody(new
+            {
+                id = _id,
+                account = _account,
+                password = _password
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<UpdateCtfUserAsyncClass>();
+            MessageBox.Show("修改成功");
+
+            var response = await "http://localhost:5012/api/user/get-ctfusers"
+                .PostAsAsync<GetCtfUserByIdAsyncClass<List<CtfUser>>>();
+            frmCtfUser.dgvCtfUser.DataSource = response.data;
+            Close();
+
+        }
+    }
+}
+..........................................................................................
+
+frmBookAdmin
+ public partial class frmBookAdmin : Form
+ {
+     List<int> _id = new List<int>();
+     Image approved = Properties.Resources.正确;
+     Image fail = Properties.Resources.错误;
+     public frmBookAdmin()
+     {
+         InitializeComponent();
+
+         dgvBooks.CellValueChanged += new DataGridViewCellEventHandler(dgvBooks_CellValueChanged);
+         dgvBooks.EditingControlShowing += DataGridViewComboBoxColumn_EditingControlShowing;
+         dgvBooks.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+         foreach (DataGridViewColumn item in this.dgvBooks.Columns)
+         {
+             item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+             item.SortMode = DataGridViewColumnSortMode.NotSortable;
+         }
+
+         this.dgvBooks.DataError += delegate (object sender, DataGridViewDataErrorEventArgs e) { };
+     }
+
+     private async void frmBooks_Load(object sender, EventArgs e)
+     {
+
+         await QueryAsync();
+         foreach (DataGridViewRow row in dgvBooks.Rows)
+         {
+
+             var isbn = row.Cells["ColBookNumber"].Value.ToString();
+             if (isbn == null) continue;
+             var response = await "http://localhost:5001/api/book/get_ctfbook_by_isbn"
+             .SetBody(new
+             {
+                 bookNumber = isbn
+             }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<CtfBook>>();
+             if (response.data != null)
+             {
+                 row.Cells["ColImage"].Value = approved;
+             }
+             else
+             {
+                 row.Cells["ColImage"].Value = fail;
+             }
+         }
+
+
+     }
+
+     protected override void OnLoad(EventArgs e)
+     {
+         base.OnLoad(e);
+         dgvBooks.AllowUserToAddRows = false;
+         dgvBooks.AutoGenerateColumns = false;
+
+     }
+
+
+     private async void DataGridViewComboBoxColumn_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+     {
+         if ( e.Control is ComboBox comboBox)
+         {
+             comboBox.SelectedIndexChanged -= ComboBox_SelectedIndexChanged;
+             comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+         }
+
+     }
+
+     private async void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
+     {
+         ComboBox comboBox = (ComboBox)sender;
+         string _feedBack = comboBox.SelectedItem.ToString();
+
+         if (comboBox != null)
+         {
+
+             DataGridView dataGridView = comboBox.FindForm().Controls.OfType<DataGridView>().FirstOrDefault();
+             if (dataGridView != null)
+             {
+
+                 DataGridViewRow currentRow = dataGridView.CurrentRow;
+
+
+                 var _id = Convert.ToInt32(currentRow.Cells["ColId"].Value);
+                 if (currentRow.Cells["ColImage"].Value == approved)
+                 {
+                     MessageBox.Show("该书已认证，无需反馈");
+                     return;
+                 }
+                 else
+                 {
+                     await "http://localhost:5001/api/book/change_feedback"
+                     .SetBody(new
+                     {
+                         id = _id,
+                         feedBack = _feedBack
+                     }, "application/x-www-form-urlencoded")
+                     .PostAsAsync<SerializationClass>();
+                 }
+             }
+         }
+
+     }
+
+
+     private void dgvBooks_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+     {
+         if (e.ColumnIndex == 0 && e.RowIndex != -1)          {
+             if (dgvBooks.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewCheckBoxCell)
+             {
+                 int cId = (int)dgvBooks.Rows[e.RowIndex].Cells["ColId"].Value;
+                 bool isChecked = (bool)dgvBooks.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
+                 if (isChecked)
+                 {
+
+                     if (dgvBooks.Rows[e.RowIndex].Cells["ColId"].Value == null)
+                     {
+                         MessageBox.Show("请勾选要操作的数据行！");
+                         return;
+                     }
+                     _id.Add(cId);
+                 }
+                 if (!isChecked && _id.Contains(cId))
+                 {
+                     _id.Remove(cId);
+                 }
+             }
+         }
+     }
+
+
+
+     private async Task QueryAsync()
+     {
+         var books = await "http://localhost:5001/api/book/get_tempbooks"
+         .PostAsAsync<SerializationClassT<List<TempBook>>>();
+         dgvBooks.DataSource = books.data;
+         foreach (DataGridViewRow row in dgvBooks.Rows)
+         {
+
+             var isbn = row.Cells["ColBookNumber"].Value.ToString();
+             if (isbn == null) continue;
+             var response = await "http://localhost:5001/api/book/get_ctfbook_by_isbn"
+             .SetBody(new
+             {
+                 bookNumber = isbn
+             }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<CtfBook>>();
+             if (response.data != null)
+             {
+                 row.Cells["ColImage"].Value = approved;
+             }
+             else
+             {
+                 row.Cells["ColImage"].Value = fail;
+             }
+
+         }
+     }
+
+
+     private async Task QueryAsync_2()
+     {
+         var books = await "http://localhost:5001/api/book/get_tempnna3"
+         .SetBody(new
+         {
+             bookNumber = tbBookNumber.Text,
+             bookName = tbBookName.Text,
+             author = tbBookAuther.Text
+         }, "application/x-www-form-urlencoded")
+         .PostAsAsync<SerializationClassT<List<TempBook>>>();
+         dgvBooks.DataSource = books.data;
+         foreach (DataGridViewRow row in dgvBooks.Rows)
+         {
+
+             var isbn = row.Cells["ColBookNumber"].Value.ToString();
+             if (isbn == null) continue;
+             var response = await "http://localhost:5001/api/book/get_ctfbook_by_isbn"
+             .SetBody(new
+             {
+                 bookNumber = isbn
+             }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<CtfBook>>();
+             if (response.data != null)
+             {
+                 row.Cells["ColImage"].Value = approved;
+             }
+             else
+             {
+                 row.Cells["ColImage"].Value = fail;
+             }
+
+         }
+
+     }
+
+
+     private async void btnSelect_Click(object sender, EventArgs e)
+     {
+
+         await QueryAsync_2();
+         
+     }
+
+
+
+     private void btnCtfBook_Click_1(object sender, EventArgs e)
+     {
+         var frm = Native.CreateInstance<frmCtfBook>();
+         frm.Show();
+         Close();
+     }
+
+     private async void btnAccess_Click_1Async(object sender, EventArgs e)
+     {
+         if (_id.Count <= 0)
+         {
+             MessageBox.Show("请勾选要操作的数据行！");
+             return;
+         }
+         int[] array = _id.ToArray();
+         _id.Clear();
+
+         foreach (int value in array)
+         {
+             var book = await "http://localhost:5001/api/book/get_tempbook_byid"
+             .SetBody(new
+             {
+                 id = value
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClassT<TempBook>>();
+
+             if (book.data == null) return;
+
+             var response = await "http://localhost:5001/api/book/get_ctfbook_by_isbn"
+             .SetBody(new
+             {
+                 bookNumber = book.data.BookNumber
+             }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<CtfBook>>();
+
+             if (response.data != null)
+             {
+                 MessageBox.Show("所选书籍中有部分已认证！");
+                 await QueryAsync();
+                 return;
+             }
+
+             await "http://localhost:5001/api/book/add_ctfbook"
+             .SetBody(new
+             {
+                 bookName = book.data.BookName,
+                 bookNumber = book.data.BookNumber,
+                 unitPrice = book.data.UnitPrice,
+                 author = book.data.Author,
+                 press = book.data.Press,
+                 publicationDate = book.data.PublicationDate,
+                 pressPhone = book.data.PressPhone,
+                 pressWeb = book.data.PressWebsite,
+                 createdTime = book.data.CreatedTime,
+                 creater = book.data.Creater,
+                 certTime = DateTime.Now,
+                 administrator = frmAdminLogin.creatorName
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClass>();
+
+         }
+         MessageBox.Show("所选书籍均已认证！");
+
+         await QueryAsync();
+
+
+         return;
+     }
+
+     private void btnClear_Click_1(object sender, EventArgs e)
+     {
+         foreach (Control c in groupBox1.Controls)
+         {
+             if (c is TextBox)
+             {
+                 ((TextBox)c).Clear();
+             }
+             if (c is ComboBox)
+             {
+                 ((ComboBox)c).SelectedIndex = -1;
+             }
+         }
+     }
+
+     private void btnQuit_Click(object sender, EventArgs e)
+     {
+         var frm = Native.CreateInstance<frmChoose>();
+         frm.Show();
+         Close();
+     }
+
+     private async void btnWithDraw_Click(object sender, EventArgs e)
+     {
+         if (_id.Count <= 0)
+         {
+             MessageBox.Show("请勾选要操作的数据行！");
+             return;
+         }
+         int[] array = _id.ToArray();
+         _id.Clear();
+
+         foreach (int value in array)
+         {
+             var book = await "http://localhost:5001/api/book/get_tempbook_byid"
+             .SetBody(new
+             {
+                 id = value
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClassT<TempBook>>();
+
+             if (book.data == null) return;
+
+             var response = await "http://localhost:5001/api/book/get_ctfbook_by_isbn"
+             .SetBody(new
+             {
+                 bookNumber = book.data.BookNumber
+             }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<CtfBook>>();
+
+             if (response.data == null)
+             {
+                 MessageBox.Show("所选书籍中有部分未认证！");
+                 await QueryAsync();
+                 return;
+             }
+
+             await "http://localhost:5001/api/book/delete_ctfbook"
+             .SetBody(new
+             {
+                 bookNumber = book.data.BookNumber,
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClass>();
+
+         }
+         MessageBox.Show("所选认证书籍均已撤回！");
+         await QueryAsync();
+         return;
+
+     }
+
+     private async void btnExportExcel_Click(object sender, EventArgs e)
+     {
+         var response = await "http://localhost:5001/api/book/get_ctfbooks"
+         .PostAsAsync<SerializationClassT<List<CtfBook>>>();
+         var books = response.data;
+         var list = new List<ExportCtfBooksDataWithSplitSheet>();
+         foreach (var book in books)
+         {
+             list.Add(new ExportCtfBooksDataWithSplitSheet()
+             {
+                 BookName = book.C_BookName,
+                 BookNumber = book.C_BookNumber,
+                 UnitPrime = book.C_UnitPrice,
+                 Author = book.C_Author,
+                 Press = book.C_Press,
+                 PublicationDate = book.C_PublicationDate,
+                 PressPhone = book.C_PressPhone,
+                 PressWebsite = book.C_PressWebsite,
+                 CreatedTime = book.C_CreatedTime,
+                 Creator = book.C_Creator,
+                 CertTime = book.C_CertTime,
+                 Administrator = book.Administrator
+             });
+         }
+         var exporter = new ExcelExporter();
+         var result = await exporter.Export("d:\\ctfbooks.xlsx", list);
+         if (result != null)
+         {
+             MessageBox.Show("Excel导出成功！");
+         }
+         else
+         {
+             MessageBox.Show("Excel导出失败！");
+         }
+     }
+ }
+...........................................................................................
+
