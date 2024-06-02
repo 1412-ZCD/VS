@@ -1,0 +1,973 @@
+Admin // 管理员需要手动建表
+
+ [SugarTable("admin")]
+ public class Admin
+ {
+     [SugarColumn(ColumnName = "id", IsPrimaryKey = true, IsIdentity = true)]
+     public int Id { get; set; }
+
+     [SugarColumn(ColumnName = "a_account", Length = 100, ColumnDescription = "账号")]
+     public string A_Account { get; set; }
+
+     [SugarColumn(ColumnName = "a_password", Length = 100, ColumnDescription = "密码")]
+     public string A_Password { get; set; }
+ }
+
+..........................................................................................
+
+CtfBook
+
+[SugarTable("ctfbooks")]
+public class CtfBook
+{
+    [SugarColumn(ColumnName = "c_book_number", Length = 20, ColumnDescription = "ISBN", IsPrimaryKey = true)]
+    public string C_BookNumber { get; set; }
+
+    [SugarColumn(ColumnName = "c_book_name", Length = 255, ColumnDescription = "图书名称")]
+    public string C_BookName { get; set; }
+
+    [SugarColumn(ColumnName = "c_unit_price", Length = 8, DecimalDigits = 2, ColumnDescription = "单价", IsNullable = true)]
+    public decimal? C_UnitPrice { get; set; }
+
+    [SugarColumn(ColumnName = "c_author", Length = 100, ColumnDescription = "作者")]
+    public string C_Author { get; set; }
+
+    [SugarColumn(ColumnName = "c_press", Length = 100, ColumnDescription = "出版社", IsNullable = true)]
+    public string C_Press { get; set; }
+
+    [SugarColumn(ColumnName = "c_publication_date", ColumnDescription = "出版日期", IsNullable = true)]
+    public DateTime C_PublicationDate { get; set; }
+
+    [SugarColumn(ColumnName = "c_press_phone", Length = 50, ColumnDescription = "出版社电话", IsNullable = true)]
+    public string C_PressPhone { get; set; }
+
+    [SugarColumn(ColumnName = "c_press_website", Length = 100, ColumnDescription = "出版社网站", IsNullable = true)]
+    public string C_PressWebsite { get; set; }
+
+    [SugarColumn(ColumnName = "c_created_time", ColumnDescription = "创建时间")]
+    public DateTime C_CreatedTime { get; set; }
+
+    [SugarColumn(ColumnName = "c_creator", Length = 20, ColumnDescription = "创建人")]
+    public string C_Creator { get; set; }
+
+    [SugarColumn(ColumnName = "c_cert_time", ColumnDescription = "认证时间")]
+    public DateTime C_CertTime { get; set; }
+
+    [SugarColumn(ColumnName = "c_administrator", Length = 20, ColumnDescription = "管理员")]
+    public string Administrator { get; set; }
+}
+
+..........................................................................................
+
+CtfUser
+
+[SugarTable("ctfuser")]
+public class CtfUser
+{
+    [SugarColumn(ColumnName = "id", IsPrimaryKey = true, IsIdentity = true)]
+    public int C_Id { get; set; }
+
+    [SugarColumn(ColumnName = "account", Length = 100, ColumnDescription = "账号")]
+    public string C_Account { get; set; }
+
+    [SugarColumn(ColumnName = "password", Length = 100, ColumnDescription = "密码")]
+    public string C_Password { get; set; }
+}
+
+.........................................................................................
+
+TempBook
+
+[SugarTable("tempbooks")]
+ public class TempBook
+{
+    [SugarColumn(ColumnName = "id", IsPrimaryKey = true, IsIdentity = true)]
+    public int Id { get; set; }
+
+    [SugarColumn(ColumnName = "book_name", Length = 255, ColumnDescription = "图书名称")]
+    public string BookName { get; set; }
+
+    [SugarColumn(ColumnName = "book_number", Length = 20, ColumnDescription = "图书号")]
+    public string BookNumber { get; set; }
+
+    [SugarColumn(ColumnName = "unit_price", Length = 8, DecimalDigits = 2, ColumnDescription = "单价", IsNullable = true)]
+    public decimal? UnitPrice { get; set; }
+
+    [SugarColumn(ColumnName = "author", Length = 100, ColumnDescription = "作者")]
+    public string Author { get; set; }
+
+    [SugarColumn(ColumnName = "press", Length = 100, ColumnDescription = "出版社", IsNullable = true)]
+    public string Press { get; set; }
+
+    [SugarColumn(ColumnName = "publication_date", ColumnDescription = "出版日期", IsNullable = true)]
+    public DateTime PublicationDate { get; set; }
+
+    [SugarColumn(ColumnName = "press_phone", Length = 50, ColumnDescription = "出版社电话", IsNullable = true)]
+    public string PressPhone { get; set; }
+
+    [SugarColumn(ColumnName = "press_website", Length = 100, ColumnDescription = "出版社网站", IsNullable = true)]
+    public string PressWebsite { get; set; }
+
+    [SugarColumn(ColumnName = "created_time", ColumnDescription = "创建时间")]
+    public DateTime CreatedTime { get; set; }
+
+    [SugarColumn(ColumnName = "creater", Length = 20, ColumnDescription = "创建人")]
+    public string Creater { get; set; }
+
+    [SugarColumn(ColumnName = "feedback", Length = 50, ColumnDescription = "反馈", IsNullable = true)]
+    public string FeedBack { get; set; }
+}
+
+..........................................................................................
+
+TempUser
+
+[SugarTable("tempuser")]
+public class TempUser
+{
+    [SugarColumn(ColumnName = "id", IsPrimaryKey = true, IsIdentity = true)]
+    public int Id { get; set; }
+
+    [SugarColumn(ColumnName = "account", Length = 100, ColumnDescription = "账号")]
+    public string Account { get; set; }
+
+    [SugarColumn(ColumnName = "password", Length = 100, ColumnDescription = "密码")]
+    public string Password{ get; set; }
+}
+
+
+..........................................................................................
+
+ErrorCode
+
+public enum EnumErrorCode
+{
+    成功 = 0,
+    失败,
+    传入参数为空,
+    账号或密码为空 = 11,
+    账号长度不足 = 12,
+    账号已被注册 = 13,
+    当前账号名正在审核中 = 14,
+
+    主键不存在 = 32,
+    主键必须为正数 = 33,
+
+    该ISBN编号对应的图书已存在 = 52
+
+}
+
+   public class WebApiResponse<T>
+   {
+       public T data { get; set; }
+       public int code { get; set; }
+
+       public string message { get; set; }
+
+
+   }
+
+
+..........................................................................................
+
+
+RegisterRequestData
+public class RegisterRequestData
+{
+    public string account { get; set; }
+    public string password { get; set; }
+}
+
+...........................................................................................
+
+CtfBookRequestsData
+
+ public class CtfBookRequestsData
+ {
+     public string bookNumber { get; set; }
+     public string bookName { get; set; }
+     public string author { get; set; }
+     public decimal? unitPrice { get; set; }
+     public string press { get; set; }
+     public DateTime publicationDate { get; set; }
+     public string pressPhone { get; set; }
+     public string pressWeb { get; set; }
+     public DateTime createdTime { get; set; }
+     public string creater { get; set; }
+
+     public DateTime certTime { get; set; }
+     public string administrator { get; set; }
+ }
+
+...........................................................................................
+
+TempBookRequestData
+
+public class TempBookRequestData
+{
+    public string bookNumber { get; set; }
+    public string bookName { get; set; }
+    public string author { get; set; }
+    public decimal? unitPrice { get; set; }
+    public string press { get; set; }
+    public DateTime publicationDate { get; set; }
+    public string pressPhone { get; set; }
+    public string pressWeb { get; set; }
+    public DateTime CreatedTime { get; set; }
+    public string creater { get; set; }
+}
+
+public class TempBookRequestData3
+{
+    public string bookNumber { get; set; }
+    public string bookName { get; set; }
+    public string author { get; set; }
+}
+
+..........................................................................................
+
+
+IUserService
+
+public interface IUserService
+{
+    Task<List<TempUser>> GetTempUserAsync();
+
+    Task<TempUser> GetTempUserByIdAsync(int id);
+    Task<CtfUser> GetCtfUserByIdAsync(int id);
+
+    Task<List<CtfUser>> GetCtfUserAsync();
+
+
+    //登录
+    Task<bool> UserLoginAsync(string account, string password);
+    Task<bool> AdminLoginAsync(string account, string password);
+
+
+    Task<bool> UpdateCtfUserAsync(int id ,string account, string password);
+
+
+    //注册
+    Task<bool> RegisterAsync(string account, string password);
+
+    //审核
+    Task<bool> CtfRegisterAsync(string account, string password);
+
+    Task<bool> DeleteCtfUserAsync(int id);
+    Task<bool> DeleteTempUserAsync(int id);
+
+    Task<TempUser> GetTempUserByNameAsync(string account);
+    Task<CtfUser> GetCtfUserByNameAsync(string account);
+}
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+UserService
+
+public class UserService : IUserService
+{
+    private readonly ISqlSugarClient _db;
+
+    public UserService(ISqlSugarClient db)
+    {
+        _db = db;
+        _db.CodeFirst.InitTables(typeof(TempUser));
+        _db.CodeFirst.InitTables(typeof(CtfUser));
+    }
+
+    public async Task<TempUser> GetTempUserByIdAsync(int id)
+    {
+        return await _db.Queryable<TempUser>().SingleAsync(it => it.Id == id);
+    }
+
+    public async Task<CtfUser> GetCtfUserByIdAsync(int id)
+    {
+        return await _db.Queryable<CtfUser>().SingleAsync(it => it.C_Id == id);
+    }
+
+
+
+    public async Task<bool> UserLoginAsync(string account, string password)
+    {
+        if( await _db.Queryable<CtfUser>().Where(it => it.C_Account == account
+        && it.C_Password == password).AnyAsync())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public async Task<bool> AdminLoginAsync(string account, string password)
+    {
+        if (await _db.Queryable<Admin>().Where(it => it.A_Account == account
+        && it.A_Password == password).AnyAsync())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public async Task<bool> RegisterAsync(string account, string password)
+    {
+        var user = new TempUser();
+        user.Account = account;
+        user.Password = password;
+
+        var userExists_T = await _db.Queryable<TempUser>().AnyAsync(u => u.Account == account);
+        var userExists_C = await _db.Queryable<CtfUser>().AnyAsync(u => u.C_Account == account);
+        var adminExists = await _db.Queryable<Admin>().AnyAsync(a => a.A_Account == account);
+        if (userExists_T || userExists_C || adminExists)
+        {
+            return false;
+        }
+        var ret = await _db.Insertable(user).ExecuteCommandAsync();
+        if (ret == 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    public async Task<bool> CtfRegisterAsync(string account, string password)
+    {
+        var user = new CtfUser();
+        user.C_Account = account;
+        user.C_Password = password;
+        var ret = await _db.Insertable(user).ExecuteCommandAsync();
+        if (ret == 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public async Task<List<TempUser>> GetTempUserAsync()
+    {
+        return await _db.Queryable<TempUser>()
+            .OrderBy(x => x.Account)
+            .ToListAsync();
+    }
+
+    public async Task<List<CtfUser>> GetCtfUserAsync()
+    {
+        return await _db.Queryable<CtfUser>()
+            .OrderBy(x => x.C_Account)
+            .ToListAsync();
+    }
+
+
+
+    public async Task<bool> DeleteCtfUserAsync(int id)
+    {
+
+        var ret = await _db.Deleteable<CtfUser>().In(id).ExecuteCommandAsync();
+        if (ret == 1) { return true; }
+        return false;
+    }
+
+    public async Task<bool> DeleteTempUserAsync(int id)
+    {
+
+        var ret = await _db.Deleteable<TempUser>().In(id).ExecuteCommandAsync();
+        if (ret == 1) { return true; }
+        return false;
+    }
+
+    public async Task<bool> UpdateCtfUserAsync(int id, string account, string password)
+    {
+        var user = new CtfUser();
+        user.C_Id = id;
+        user.C_Account = account;
+        user.C_Password = password;
+        var ret = await _db.Updateable(user).ExecuteCommandAsync();
+        if (ret == 1)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public async Task<TempUser> GetTempUserByNameAsync(string account)
+    {
+        return  await _db.Queryable<TempUser>().SingleAsync(it => it.Account == account);
+    }
+
+    public async Task<CtfUser> GetCtfUserByNameAsync(string account)
+    {
+        return await _db.Queryable<CtfUser>().SingleAsync(it => it.C_Account == account);
+    }
+
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+IBookService
+
+ public interface IBookService
+ {
+     Task<TempBook> GetTempBookByIdAsync(int id);
+
+     Task<CtfBook> GetCtfBookBy_ISBN_Async(string bookNumber);
+
+
+     Task<List<TempBook>> GetTempBooksAsync();
+
+     Task<List<CtfBook>> GetCtfBooksAsync();
+
+     Task<List<TempBook>> GetTempBooks3Async(string bookNumber
+         , string bookName
+         , string author);
+
+     Task<List<CtfBook>> GetCtfBooks3Async(string bookNumber
+         , string bookName
+         , string author);
+
+     Task<bool> AddTempBookAsync(string bookName, string bookNumber
+       , decimal? unitPrice, string author
+       , string press, DateTime publicationDate
+       , string pressPhone, string pressWeb
+       , DateTime CreatedTime, string creator);
+
+     Task<bool> UpdateTempBookAsync(int id, string bookName, string bookNumber
+       , decimal? unitPrice, string author
+       , string press, DateTime publicationDate
+       , string pressPhone, string pressWeb
+       , DateTime CreatedTime, string creator, string feedBack);
+
+     Task<bool> DeleteTempBookAsync(int id);
+
+     Task<bool> DeleteCtfBookAsync(string bookNumber);
+
+     Task<List<TempBook>> GetTempBooksByCreatorAsync(string creater);
+
+     Task<bool> AddCtfBookAsync(string bookName, string bookNumber
+       , decimal? unitPrice, string author
+       , string press, DateTime publicationDate
+       , string pressPhone, string pressWeb
+       , DateTime CreatedTime, string creator
+       , DateTime CertTime, string administrator);
+
+     Task<bool> ChangeFeedBackAsync(int id, string feedBack);
+
+ }
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+BookService
+
+ public class BookService : IBookService
+ {
+     private readonly ISqlSugarClient _db;
+     public BookService(ISqlSugarClient db)
+     {
+         _db = db;
+
+         _db.CodeFirst.InitTables(typeof(TempBook));
+         _db.CodeFirst.InitTables(typeof(CtfBook));
+
+     }
+
+     public async Task<TempBook> GetTempBookByIdAsync(int id)
+     {
+         return await _db.Queryable<TempBook>().SingleAsync(it => it.Id == id);
+     }
+
+
+
+     public async Task<List<TempBook>> GetTempBooksAsync()
+     {
+         return await _db.Queryable<TempBook>()
+             .OrderBy(x => x.BookNumber)
+             .ToListAsync();
+     }
+
+     public async Task<List<CtfBook>> GetCtfBooksAsync()
+     {
+         return await _db.Queryable<CtfBook>()
+             .OrderBy(x => x.C_BookNumber)
+             .ToListAsync();
+     }
+
+     public async Task<List<TempBook>> GetTempBooks3Async(string bookNumber, string bookName, string author)
+     {
+         var qry = _db.Queryable<TempBook>();
+         if (!string.IsNullOrWhiteSpace(bookNumber))
+         {
+             qry = qry.Where(w => w.BookNumber.Contains(bookNumber));
+         }
+         if (!string.IsNullOrWhiteSpace(bookName))
+         {
+             qry = qry.Where(w => w.BookName.Contains(bookName));
+         }
+         if (!string.IsNullOrWhiteSpace(author))
+         {
+             qry = qry.Where(w => w.Author.Contains(author));
+         }
+         return await qry.ToListAsync();
+     }
+
+     public async Task<List<CtfBook>> GetCtfBooks3Async(string bookNumber, string bookName, string author)
+     {
+
+         var qry = _db.Queryable<CtfBook>();
+         if (!string.IsNullOrWhiteSpace(bookNumber))
+         {
+             qry = qry.Where(w => w.C_BookNumber.Contains(bookNumber));
+         }
+         if (!string.IsNullOrWhiteSpace(bookName))
+         {
+             qry = qry.Where(w => w.C_BookName.Contains(bookName));
+         }
+         if (!string.IsNullOrWhiteSpace(author))
+         {
+             qry = qry.Where(w => w.C_Author.Contains(author));
+         }
+         return await qry.ToListAsync();
+     }
+
+
+
+     public async Task<bool> AddTempBookAsync(string bookName, string bookNumber
+       , decimal? unitPrice, string author
+       , string press, DateTime publicationDate
+       , string pressPhone, string pressWeb
+       , DateTime CreatedTime, string creator)
+     {
+         var bookExists_1 = await _db.Queryable<TempBook>().AnyAsync(u => u.BookNumber == bookNumber);
+         var bookExists_2 = await _db.Queryable<TempBook>().AnyAsync(u => u.BookNumber == bookNumber);
+         if (bookExists_1 && bookExists_2)
+         {
+             return false;
+         }
+         var book = new TempBook();
+         book.BookName = bookName;
+         book.BookNumber = bookNumber;
+         book.UnitPrice = unitPrice;
+         book.Author = author;
+         book.Press = press;
+         book.PublicationDate = publicationDate;
+         book.PressPhone = pressPhone;
+         book.PressWebsite = pressWeb;
+         book.CreatedTime = CreatedTime;
+         book.Creater = creator;
+
+         var ret = await _db.Insertable(book).ExecuteCommandAsync();
+
+         if (ret == 1)
+         {
+             return true;
+         }
+         return false;
+
+     }
+
+     public async Task<bool> UpdateTempBookAsync(int id, string bookName, string bookNumber
+       , decimal? unitPrice, string author
+       , string press, DateTime publicationDate
+       , string pressPhone, string pressWeb
+       , DateTime CreatedTime, string creator, string feedBack)
+     {
+         var tmp_2 = string.Empty;
+         var b_1 = _db.Queryable<TempBook>().InSingle(id); 
+         var b_2 = _db.Queryable<CtfBook>().InSingle(bookNumber); 
+         if(b_2 == null)
+         {
+              tmp_2 = "";
+         }
+         else
+         {
+             tmp_2 = b_2.C_BookNumber;
+         }
+         var tmp_1 = b_1.BookNumber;
+         var book = new TempBook();
+         book.Id = id;
+         book.BookName = bookName;
+         book.BookNumber = bookNumber;
+         book.UnitPrice = unitPrice;
+         book.Author = author;
+         book.Press = press;
+         book.PublicationDate = publicationDate;
+         book.PressWebsite = pressWeb;
+         book.PressPhone = pressPhone;
+         book.CreatedTime = CreatedTime;
+         book.Creater = creator;
+         book.FeedBack = feedBack;
+
+         if (Equals(bookNumber, tmp_1))
+         {
+
+         }else if(Equals(bookNumber, tmp_2))
+         {
+             return false;
+         }
+
+         var ret = await _db.Updateable(book).ExecuteCommandAsync();
+         if (ret == 1)
+         {
+             return true;
+         }
+         return false;
+
+     }
+
+     public async Task<bool> DeleteTempBookAsync(int id)
+     {
+         if (id <= 0)
+         {
+             return false;
+         }
+
+         var ret = await _db.Deleteable<TempBook>().In(id).ExecuteCommandAsync();
+         if (ret == 1)
+         {
+             return true;
+         }
+         return false;
+     }
+
+     public async Task<List<TempBook>> GetTempBooksByCreatorAsync(string creater)
+     {
+         var qry = _db.Queryable<TempBook>();
+         if (!string.IsNullOrWhiteSpace(creater))
+         {
+             qry = qry.Where(w => w.Creater == creater);
+         }
+         return await qry.ToListAsync();
+     }
+
+     public async Task<bool> AddCtfBookAsync(string bookName, string bookNumber
+       , decimal? unitPrice, string author
+       , string press, DateTime publicationDate
+       , string pressPhone, string pressWeb
+       , DateTime CreatedTime, string creator
+       , DateTime CertTime, string administrator)
+     {
+         var book = new CtfBook();
+         book.C_BookName = bookName;
+         book.C_BookNumber = bookNumber;
+         book.C_UnitPrice = unitPrice;
+         book.C_Author = author;
+         book.C_Press = press;
+         book.C_PublicationDate = publicationDate;
+         book.C_PressPhone = pressPhone;
+         book.C_PressWebsite = pressWeb;
+         book.C_CreatedTime = CreatedTime;
+         book.C_Creator = creator;
+         book.C_CertTime = CertTime;
+         book.Administrator = administrator;
+
+         var ret = await _db.Insertable(book).ExecuteCommandAsync();
+
+         if (ret == 1)
+         {
+             return true;
+         }
+         return false;
+
+     }
+
+     public async Task<CtfBook> GetCtfBookBy_ISBN_Async(string bookNumber)
+     {
+         return await _db.Queryable<CtfBook>().SingleAsync(it => it.C_BookNumber == bookNumber);
+     }
+
+     public async Task<bool> DeleteCtfBookAsync(string bookNumber)
+     {
+         var ret = await _db.Deleteable<CtfBook>().In(bookNumber).ExecuteCommandAsync();
+         if (ret == 1)
+         {
+             return true;
+         }
+         return false;
+     }
+
+     public async Task<bool> ChangeFeedBackAsync(int id, string feedBack)
+     {
+         var updateObj = new TempBook() { Id = id }; 
+         _db.Tracking(updateObj);
+         updateObj.FeedBack = feedBack;
+         var response = await _db.Updateable(updateObj).ExecuteCommandAsync();
+         if(response == 1)
+         {
+             return true;
+         }
+         return false;
+     }
+
+ }
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+BookController
+
+
+public class BookController : IDynamicApiController
+{
+    private readonly IBookService _bookService;
+
+    private readonly ILogger<BookController> _logger;
+
+    public BookController(IBookService bookService, ILogger<BookController> logger)
+    {
+        _bookService = bookService;
+        _logger = logger;
+    }
+
+    [HttpPost]
+    [Route("get_tempbooks")]
+    public async Task<List<TempBook>> GetTempBooksAsync()
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempBooksAsync接口");
+        return await _bookService.GetTempBooksAsync();
+    }
+
+    [HttpPost]
+    [Route("get_tempbook_byid")]
+    public async Task<TempBook> GetTempBookByIdAsync([FromForm] int id)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempBookByIdAsync接口");
+        return await _bookService.GetTempBookByIdAsync(id);
+    }
+
+    [HttpPost]
+    [Route("get_ctfbooks")]
+    public async Task<List<CtfBook>> GetCtfBooksAsync()
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetCtfBooksAsync接口");
+        return await _bookService.GetCtfBooksAsync();
+    }
+
+
+    [HttpPost]
+    [Route("get_tempnna3")]
+    public async Task<List<TempBook>> GetTempBooks3Async([FromForm] TempBookRequestData3 TBR)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempBooks3Async接口");
+        return await _bookService.GetTempBooks3Async(TBR.bookNumber, TBR.bookName, TBR.author);
+    }
+
+
+    [HttpPost]
+    [Route("get_ctfnna3")]
+    public async Task<List<CtfBook>> GetCtfBooks3Async([FromForm] TempBookRequestData3 TBR)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetCtfBooks3Async接口");
+        return await _bookService.GetCtfBooks3Async(TBR.bookNumber, TBR.bookName, TBR.author);
+    }
+
+    [HttpPost]
+    [Route("add_tempbook")]
+    public async Task<bool> AddTempBookAsync([FromForm] TempBookRequestData TBR)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了AddBookAsync接口");
+        return await _bookService.AddTempBookAsync(TBR.bookName, TBR.bookNumber, TBR.unitPrice
+            , TBR.author, TBR.press, TBR.publicationDate
+            , TBR.pressPhone, TBR.pressWeb, TBR.CreatedTime, TBR.creater);
+    }
+
+    [HttpPost]
+    [Route("update_tempbook")]
+    public async Task<bool> UpdateTempBookAsync([FromForm] int id, [FromForm] TempBookRequestData TBR, [FromForm] string feedBack)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了UpdateBookAsync接口");
+        return await _bookService.UpdateTempBookAsync(id, TBR.bookName, TBR.bookNumber
+            , TBR.unitPrice, TBR.author, TBR.press, TBR.publicationDate
+            , TBR.pressPhone, TBR.pressWeb, TBR.CreatedTime, TBR.creater, feedBack);
+    }
+
+    [HttpPost]
+    [Route("delete_tempbook")]
+    public async Task<bool> DeleteTempBookAsync([FromForm] int id)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了DeleteTempBookAsync接口");
+        return await _bookService.DeleteTempBookAsync(id);
+    }
+
+    [HttpPost]
+    [Route("get_tempbooks_by_creator")]
+    public async Task<List<TempBook>> GetTempBooksByCreatorAsync([FromForm] string creater)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempBooksByCreatorAsync接口");
+        return await _bookService.GetTempBooksByCreatorAsync(creater);
+    }
+
+    [HttpPost]
+    [Route("add_ctfbook")]
+    public async Task<bool> AddCtfBookAsync([FromForm ]CtfBookRequestsData CBR)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了AddCtfBookAsync接口");
+        return await _bookService.AddCtfBookAsync(CBR.bookName, CBR.bookNumber
+            ,CBR.unitPrice, CBR.author
+            ,CBR.press, CBR.publicationDate
+            ,CBR.pressPhone, CBR.pressWeb
+            ,CBR.createdTime, CBR.creater
+            ,CBR.certTime, CBR.administrator);
+    }
+
+    [HttpPost]
+    [Route("get_ctfbook_by_isbn")]
+    public async Task<CtfBook> GetCtfBookBy_ISBN_Async([FromForm]string bookNumber)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetCtfBookByIdAsync接口");
+        return await _bookService.GetCtfBookBy_ISBN_Async(bookNumber);
+    }
+
+    [HttpPost]
+    [Route("delete_ctfbook")]
+    public async Task<bool> DeleteCtfBookAsync([FromForm] string bookNumber)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了DeleteCtfBookAsync接口");
+        return await _bookService.DeleteCtfBookAsync(bookNumber);
+    }
+
+    [HttpPost]
+    [Route("change_feedback")]
+    public async Task<bool> ChangeFeedBackAsync([FromForm]int id, [FromForm]string feedBack)
+    {
+        _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了ChangeFeedBackAsync接口");
+        return await _bookService.ChangeFeedBackAsync(id, feedBack);
+    }
+
+
+}
+.。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+UserController
+
+
+   public class UserController : IDynamicApiController
+  {
+      private readonly IUserService _userService;
+      private readonly ILogger<UserController> _logger;
+      public UserController(IUserService userService, ILogger<UserController> logger)
+      {
+          _userService = userService;
+          _logger = logger;
+      }
+
+      [HttpPost]
+      public async Task<bool> UserLoginAsync([FromForm] RegisterRequestData data)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了UserLoginAsync接口");
+          if (data == null || string.IsNullOrWhiteSpace(data.account) || string.IsNullOrWhiteSpace(data.password))
+          {
+              return false; 
+          }
+
+          return await _userService.UserLoginAsync(data.account, data.password);
+
+      }
+
+      [HttpPost]
+      public async Task<bool> AdminLoginAsync([FromForm] RegisterRequestData data)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----{App.User}有人访问了AdminLoginAsync接口");
+          if (data == null || string.IsNullOrWhiteSpace(data.account) || string.IsNullOrWhiteSpace(data.password))
+          {
+              return false;
+          }
+          return await _userService.AdminLoginAsync(data.account, data.password);
+      }
+
+      [HttpPost]
+      public async Task<bool> Register([FromForm] RegisterRequestData data)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了Register接口");
+          if (data == null || string.IsNullOrWhiteSpace(data.account) || string.IsNullOrWhiteSpace(data.password))
+          {
+              return false;
+          }
+
+          var ret = await _userService.RegisterAsync(data.account, data.password);
+          return ret;
+      }
+
+
+      [HttpPost]
+      public async Task<WebApiResponse<bool>> CtfRegisterAsync([FromForm] RegisterRequestData data)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了CtfRegisterAsync接口");
+          var ret = await _userService.CtfRegisterAsync(data.account, data.password);
+          if (ret)
+          {
+              return new WebApiResponse<bool>() { code = (int)EnumErrorCode.成功, message = "审核通过", data = true };
+          }
+          return new WebApiResponse<bool>() { code = (int)EnumErrorCode.失败, message = "审核失败" };
+      }
+
+      [HttpPost]
+      public async Task<List<TempUser>> GetTempUserAsync()
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempUserAsync接口");
+          var respnose = await _userService.GetTempUserAsync();
+          return respnose;
+      }
+
+      [HttpPost]
+      public async Task<TempUser> GetTempUserByIdAsync([FromForm]int id)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempUserByIdAsync接口");
+          return await _userService.GetTempUserByIdAsync(id);
+      }
+
+      [HttpPost]
+      public async Task<CtfUser> GetCtfUserByIdAsync([FromForm] int id)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetCtfUserByIdAsync接口");
+          return await _userService.GetCtfUserByIdAsync(id);
+      }
+
+      [HttpPost]
+      [Route("deletectfuser")]
+      public async Task<bool> DeleteCtfUserAsync([FromForm]int id)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了DeleteCtfUserAsync接口");
+          return await _userService.DeleteCtfUserAsync(id);
+      }
+
+      [HttpPost]
+      [Route("deletetempuser")]
+      public async Task<bool> DeleteTempUserAsync([FromForm] int id)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了DeleteTempUserAsync接口");
+          return await _userService.DeleteTempUserAsync(id);
+      }
+
+      [HttpPost]
+      [Route("get-ctfusers")]
+      public async Task<List<CtfUser>> GetCtfUsersAsync()
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了DeleteUserAsync接口");
+          return await _userService.GetCtfUserAsync();
+      }
+
+      [HttpPost]
+      [Route("update-ctfuser")]
+      public async Task<bool> UpdateCtfUserAsync([FromForm] int id, [FromForm] RegisterRequestData data)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了UpdateCtfUserAsync接口");
+          return await _userService.UpdateCtfUserAsync(id, data.account, data.password);
+      }
+
+      [HttpPost]
+      [Route("get-tempuser-by-name")]
+      public async Task<TempUser> GetTempUserByNameAsync([FromForm] string account)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempUserByNameAsync接口");
+          return await _userService.GetTempUserByNameAsync(account);
+      }
+
+      [HttpPost]
+      [Route("get-ctfuser-by-name")]
+      public async Task<CtfUser> GetCtfUserByNameAsync([FromForm] string account)
+      {
+          _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempUserByNameAsync接口");
+          return await _userService.GetCtfUserByNameAsync(account);
+      }
+
+}
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。

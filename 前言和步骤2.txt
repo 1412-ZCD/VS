@@ -1,0 +1,73 @@
+上次的视频中，图书编号判重有些问题，不过不影响这次的项目。
+这次需要准备3个项目，分别做为服务端、用户、管理员，可以直接拿上期的项目做，因为需要大改。
+3人组3个项目，2人组2个项目，把用户和管理员写在同一个项目
+用户和管理员不需要注入bookService和UserService，所有数据都存放在服务端的计算机中，只需要服务端开启，用户和管理员通过生成的url访问服务端的数据
+关于不同计算机访问服务端，就是一台计算机访问另一台计算机，可以使用Ngrok实现，具体请参考相关资料，csdn、ngork官网等平台上都有教程，可以免费申请使用
+使用后如果出错可以加相关群询问，群主会耐心解决，可惜我的电脑内部出了问题不能作为服务端T_T
+
+https://www.ngrok.cc/
+
+
+主包的vs出了点问题，修改窗体名称会失败，这里直接重新创建项目了，用户与管理员的项目重新创建
+
+
+MD和它爆了， 后面的应都可以用，hh不能验证是不是都对了
+
+这里演示的是三个项目在同一台电脑上运行，访问的是localhost本地，要想在不同电脑上运行，去ngork注册一个账号，免费申请一个，呃呃呃，使用教程去csdn上找就行， 注意这里，"http://localhost:5001/api/user/admin-login" 把他”localhost:5001“ 改成 使用ngork后的地址，就可以让别人访问服务端电脑里面的数据
+
+首先要开启服务端，用户和管理员才能使用
+如果不先启动服务器，客户端会报错”端口号积极拒绝“
+
+这里查询好像没用，等会康康
+
+差不多就这些，部分没完成的如 日志区分管理员与用户、显示接口地址等不会写，界面过于单调，可以自己设置
+
+
+[STAThread]
+static void Main()
+{
+    Serve.RunNative(services =>
+    {
+
+	services.AddRemoteRequest();
+    }, includeWeb: false);
+    // To customize application configuration such as set high DPI settings or default font,
+    // see https://aka.ms/applicationconfiguration.
+    ApplicationConfiguration.Initialize();
+
+    System.Windows.Forms.Application.Run(Native.CreateInstance<frmLogin>());
+}
+
+
+
+
+
+
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+
+服务端： 修改端口改成5001
+	新建数据库，
+	临时图书、临时用户、认证图书、认证用户、管理员，
+	IUserService、IBookSrevice、Userservice、BookService
+	UserController、BookController
+	Common
+
+管理员： 临时图书、临时用户、认证图书、认证用户
+	删注入，加 services.AddRemoteRequest();
+	Commmon， Magicodes.IE
+	frmAdminLogin
+	frmChoose
+	frmUserAdmin - frmCtfUser - frmAlter
+	frmBookAdmin 
+
+用户：     临时图书、临时用户、认证图书、认证用户
+	删注入，加 services.AddRemoteRequest();
+	Commmon
+	frmLogin - frmUserRegister
+	frmBooks - frmTempBooks - frmBookDetails
+	
+	
+	
+	
