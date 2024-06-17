@@ -1,0 +1,1689 @@
+TempBook
+
+结束哩
+
+[SugarTable("tempbooks")]
+public class TempBook
+{
+    [SugarColumn(ColumnName = "id", IsPrimaryKey = true, IsIdentity = true)]
+    public int Id { get; set; }
+
+    [SugarColumn(ColumnName = "book_name", Length = 255, ColumnDescription = "图书名称")]
+    public string BookName { get; set; }
+
+    [SugarColumn(ColumnName = "book_number", Length = 20, ColumnDescription = "图书号")]
+    public string BookNumber { get; set; }
+
+    [SugarColumn(ColumnName = "unit_price", Length = 8, DecimalDigits = 2, ColumnDescription = "单价", IsNullable = true)]
+    public decimal? UnitPrice { get; set; }
+
+    [SugarColumn(ColumnName = "author", Length = 100, ColumnDescription = "作者")]
+    public string Author { get; set; }
+
+    [SugarColumn(ColumnName = "press", Length = 100, ColumnDescription = "出版社", IsNullable = true)]
+    public string Press { get; set; }
+
+    [SugarColumn(ColumnName = "publication_date", ColumnDescription = "出版日期", IsNullable = true)]
+    public DateTime PublicationDate { get; set; }
+
+    [SugarColumn(ColumnName = "press_phone", Length = 50, ColumnDescription = "出版社电话", IsNullable = true)]
+    public string PressPhone { get; set; }
+
+    [SugarColumn(ColumnName = "press_website", Length = 100, ColumnDescription = "出版社网站", IsNullable = true)]
+    public string PressWebsite { get; set; }
+
+    [SugarColumn(ColumnName = "created_time", ColumnDescription = "创建时间")]
+    public DateTime CreatedTime { get; set; }
+
+    [SugarColumn(ColumnName = "creater", Length = 20, ColumnDescription = "创建人")]
+    public string Creater { get; set; }
+
+    [SugarColumn(ColumnName = "feedback", Length = 50, ColumnDescription = "反馈", IsNullable = true)]
+    public string FeedBack { get; set; }
+
+    [SugarColumn(ColumnName = "book_cover", ColumnDescription = "图书封面", IsNullable = true)]
+    public byte[] BookCover { get; set; }
+}
+
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+CtfBook
+
+[SugarTable("ctfbooks")]
+public class CtfBook
+{
+
+    [SugarColumn(ColumnName = "c_book_number", Length = 20, ColumnDescription = "ISBN", IsPrimaryKey = true)]
+    public string C_BookNumber { get; set; }
+
+    [SugarColumn(ColumnName = "c_book_name", Length = 255, ColumnDescription = "图书名称")]
+    public string C_BookName { get; set; }
+
+    [SugarColumn(ColumnName = "c_unit_price", Length = 8, DecimalDigits = 2, ColumnDescription = "单价", IsNullable = true)]
+    public decimal? C_UnitPrice { get; set; }
+
+    [SugarColumn(ColumnName = "c_author", Length = 100, ColumnDescription = "作者")]
+    public string C_Author { get; set; }
+
+    [SugarColumn(ColumnName = "c_press", Length = 100, ColumnDescription = "出版社", IsNullable = true)]
+    public string C_Press { get; set; }
+
+    [SugarColumn(ColumnName = "c_publication_date", ColumnDescription = "出版日期", IsNullable = true)]
+    public DateTime C_PublicationDate { get; set; }
+
+    [SugarColumn(ColumnName = "c_press_phone", Length = 50, ColumnDescription = "出版社电话", IsNullable = true)]
+    public string C_PressPhone { get; set; }
+
+    [SugarColumn(ColumnName = "c_press_website", Length = 100, ColumnDescription = "出版社网站", IsNullable = true)]
+    public string C_PressWebsite { get; set; }
+
+    [SugarColumn(ColumnName = "c_created_time", ColumnDescription = "创建时间")]
+    public DateTime C_CreatedTime { get; set; }
+
+    [SugarColumn(ColumnName = "c_creator", Length = 20, ColumnDescription = "创建人")]
+    public string C_Creator { get; set; }
+
+    [SugarColumn(ColumnName = "c_cert_time", ColumnDescription = "认证时间")]
+    public DateTime C_CertTime { get; set; }
+
+    [SugarColumn(ColumnName = "c_administrator", Length = 20, ColumnDescription = "管理员")]
+    public string Administrator { get; set; }
+
+    [SugarColumn(ColumnName = "c_book_cover", ColumnDescription = "图书封面", IsNullable = true)]
+    public byte[] C_BookCover { get; set; }
+
+    [Navigate(NavigateType.OneToMany, nameof(SingleBook.CtfBook_ISBN))]
+    public List<SingleBook> SingleBooks { get; set; }
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+SingleBook
+
+[SugarTable("single_books")]
+public class SingleBook
+{
+    [SugarColumn(ColumnName = "id", IsPrimaryKey = true, IsIdentity = true)]
+    public int Id { get; set; }
+
+    [SugarColumn(ColumnName = "single_book_no", Length = 30, ColumnDescription = "单本图书编号")]
+    public string SingleBookNo { get; set; }
+
+    [SugarColumn(ColumnName = "book_status", ColumnDescription = "图书状态")]
+    public EnumBookStatus BookStatus { get; set;}
+
+    [Navigate(NavigateType.ManyToOne, nameof(CtfBook_ISBN), nameof(CtfBook.C_BookNumber))]
+    public CtfBook CtfBook { get; set; }
+
+    [SugarColumn(ColumnName = "book_ISBN", ColumnDescription = "ISBN")]
+    public string CtfBook_ISBN { get; set; }
+
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+EnumBookStatus
+
+public enum EnumBookStatus
+{
+    可出借 = 1,
+    被预订 = 2,
+    已借出 = 3
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+IBookService
+
+Task<TempBook> GetTempBookByIdAsync(int id);
+
+Task<CtfBook> GetCtfBookBy_ISBN_Async(string bookNumber);
+
+
+Task<List<TempBook>> GetTempBooksAsync();
+
+Task<List<CtfBook>> GetCtfBooksAsync();
+
+Task<List<TempBook>> GetTempBooks3Async(string bookNumber
+    , string bookName
+    , string author);
+
+Task<List<CtfBook>> GetCtfBooks3Async(string bookNumber
+    , string bookName
+    , string author);
+
+Task<bool> AddTempBookAsync(string bookName, string bookNumber
+  , decimal? unitPrice, string author
+  , string press, DateTime publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creator, byte[] bookCover);
+
+Task<bool> UpdateTempBookAsync(int id, string bookName, string bookNumber
+  , decimal? unitPrice, string author
+  , string press, DateTime publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creator, string feedBack, byte[] bookCover);
+
+Task<bool> DeleteTempBookAsync(int id);
+
+Task<bool> DeleteCtfBookAsync(string bookNumber);
+
+Task<List<TempBook>> GetTempBooksByCreatorAsync(string creater);
+
+Task<bool> AddCtfBookAsync(string bookName, string bookNumber
+  , decimal? unitPrice, string author
+  , string press, DateTime publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creator
+  , DateTime CertTime, string administrator
+  , byte[] bookCover);
+
+
+
+Task<bool> ChangeFeedBackAsync(int id, string feedBack);
+
+Task<bool> IS_ExitISBN_In_CtfBookAsync(string ISBN);
+
+Task<List<SingleBook>> GetSingleBooksbyISBNAsync(string ISBN);
+
+Task<bool> AddSingleBookAsync(string ISBN, string singleBookNo, EnumBookStatus bookStatus);
+
+Task<List<SingleBook>> GetSingBookByISBN_NoAsync(string ISBN, string singleBookNo);
+
+Task<bool> IS_ExitNoAsync(string No, string ISBN);
+
+Task<bool> UpdateSingleBookAsync(int Id, string ISBN, string No, EnumBookStatus bookStatus);
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+BookService
+
+private readonly ISqlSugarClient _db;
+public BookService(ISqlSugarClient db)
+{
+    _db = db;
+
+    _db.CodeFirst.InitTables(typeof(TempBook));
+    _db.CodeFirst.InitTables(typeof(CtfBook));
+    _db.CodeFirst.InitTables(typeof(SingleBook));
+
+}
+
+public async Task<TempBook> GetTempBookByIdAsync(int id)
+{
+    return await _db.Queryable<TempBook>().SingleAsync(it => it.Id == id);
+}
+
+
+
+public async Task<List<TempBook>> GetTempBooksAsync()
+{
+    return await _db.Queryable<TempBook>()
+        .OrderBy(x => x.BookNumber)
+        .ToListAsync();
+}
+
+public async Task<List<CtfBook>> GetCtfBooksAsync()
+{
+    return await _db.Queryable<CtfBook>()
+        .OrderBy(x => x.C_BookNumber)
+        .ToListAsync();
+}
+
+public async Task<List<TempBook>> GetTempBooks3Async(string bookNumber, string bookName, string author)
+{
+    var qry = _db.Queryable<TempBook>();
+    if (!string.IsNullOrWhiteSpace(bookNumber))
+    {
+        qry = qry.Where(w => w.BookNumber.Contains(bookNumber));
+    }
+    if (!string.IsNullOrWhiteSpace(bookName))
+    {
+        qry = qry.Where(w => w.BookName.Contains(bookName));
+    }
+    if (!string.IsNullOrWhiteSpace(author))
+    {
+        qry = qry.Where(w => w.Author.Contains(author));
+    }
+    return await qry.ToListAsync();
+}
+
+public async Task<List<CtfBook>> GetCtfBooks3Async(string bookNumber, string bookName, string author)
+{
+    var qry = _db.Queryable<CtfBook>();
+    if (!string.IsNullOrWhiteSpace(bookNumber))
+    {
+        qry = qry.Where(w => w.C_BookNumber.Contains(bookNumber));
+    }
+    if (!string.IsNullOrWhiteSpace(bookName))
+    {
+        qry = qry.Where(w => w.C_BookName.Contains(bookName));
+    }
+    if (!string.IsNullOrWhiteSpace(author))
+    {
+        qry = qry.Where(w => w.C_Author.Contains(author));
+    }
+    return await qry.ToListAsync();
+}
+
+
+
+public async Task<bool> AddTempBookAsync(string bookName, string bookNumber
+  , decimal? unitPrice, string author
+  , string press, DateTime publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creator
+  , byte[] bookCover )
+{
+    var bookExists_1 = await _db.Queryable<TempBook>().AnyAsync(u => u.BookNumber == bookNumber);
+    var bookExists_2 = await _db.Queryable<CtfBook>().AnyAsync(u => u.C_BookNumber == bookNumber);
+    if (bookExists_1 && bookExists_2)
+    {
+        return false;
+    }
+    var book = new TempBook();
+    book.BookName = bookName;
+    book.BookNumber = bookNumber;
+    book.UnitPrice = unitPrice;
+    book.Author = author;
+    book.Press = press;
+    book.PublicationDate = publicationDate;
+    book.PressPhone = pressPhone;
+    book.PressWebsite = pressWeb;
+    book.CreatedTime = CreatedTime;
+    book.Creater = creator;
+    book.BookCover = bookCover;
+
+    var ret = await _db.Insertable(book).ExecuteCommandAsync();
+
+    if (ret == 1)
+    {
+        return true;
+    }
+    return false;
+
+}
+
+public async Task<bool> UpdateTempBookAsync(int id, string bookName, string bookNumber
+  , decimal? unitPrice, string author
+  , string press, DateTime publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creator
+  , string feedBack, byte[] bookCover)
+{
+    var tmp_2 = string.Empty;
+    var b_1 = _db.Queryable<TempBook>().InSingle(id);
+    var b_2 = _db.Queryable<CtfBook>().InSingle(bookNumber); 
+    if(b_2 == null)
+    {
+         tmp_2 = "";
+    }
+    else
+    {
+        tmp_2 = b_2.C_BookNumber;
+    }
+    var tmp_1 = b_1.BookNumber;
+    var book = new TempBook();
+    book.Id = id;
+    book.BookName = bookName;
+    book.BookNumber = bookNumber;
+    book.UnitPrice = unitPrice;
+    book.Author = author;
+    book.Press = press;
+    book.PublicationDate = publicationDate;
+    book.PressWebsite = pressWeb;
+    book.PressPhone = pressPhone;
+    book.CreatedTime = CreatedTime;
+    book.Creater = creator;
+    book.FeedBack = feedBack;
+    book.BookCover = bookCover;
+
+    if (Equals(bookNumber, tmp_1))
+    {
+
+    }else if(Equals(bookNumber, tmp_2))
+    {
+        return false;
+    }
+
+    var ret = await _db.Updateable(book).ExecuteCommandAsync();
+    if (ret == 1)
+    {
+        return true;
+    }
+    return false;
+
+}
+
+public async Task<bool> DeleteTempBookAsync(int id)
+{
+    if (id <= 0)
+    {
+        return false;
+    }
+
+    var ret = await _db.Deleteable<TempBook>().In(id).ExecuteCommandAsync();
+    if (ret == 1)
+    {
+        return true;
+    }
+    return false;
+}
+
+public async Task<List<TempBook>> GetTempBooksByCreatorAsync(string creater)
+{
+    var qry = _db.Queryable<TempBook>();
+    if (!string.IsNullOrWhiteSpace(creater))
+    {
+        qry = qry.Where(w => w.Creater == creater);
+    }
+    return await qry.ToListAsync();
+}
+
+public async Task<bool> AddCtfBookAsync(string bookName, string bookNumber
+  , decimal? unitPrice, string author
+  , string press, DateTime publicationDate
+  , string pressPhone, string pressWeb
+  , DateTime CreatedTime, string creator
+  , DateTime CertTime, string administrator
+  , byte[] bookCover)
+{
+    var book = new CtfBook();
+    book.C_BookName = bookName;
+    book.C_BookNumber = bookNumber;
+    book.C_UnitPrice = unitPrice;
+    book.C_Author = author;
+    book.C_Press = press;
+    book.C_PublicationDate = publicationDate;
+    book.C_PressPhone = pressPhone;
+    book.C_PressWebsite = pressWeb;
+    book.C_CreatedTime = CreatedTime;
+    book.C_Creator = creator;
+    book.C_CertTime = CertTime;
+    book.Administrator = administrator;
+    book.C_BookCover = bookCover;
+
+    var ret = await _db.Insertable(book).ExecuteCommandAsync();
+
+    if (ret == 1)
+    {
+        return true;
+    }
+    return false;
+
+}
+
+public async Task<CtfBook> GetCtfBookBy_ISBN_Async(string bookNumber)
+{
+    return await _db.Queryable<CtfBook>().SingleAsync(it => it.C_BookNumber == bookNumber);
+}
+
+public async Task<bool> DeleteCtfBookAsync(string bookNumber)
+{
+    var ret = await _db.Deleteable<CtfBook>().In(bookNumber).ExecuteCommandAsync();
+    if (ret == 1)
+    {
+        return true;
+    }
+    return false;
+}
+
+public async Task<bool> ChangeFeedBackAsync(int id, string feedBack)
+{
+    var updateObj = new TempBook() { Id = id }; 
+    _db.Tracking(updateObj);
+    updateObj.FeedBack = feedBack;
+    var response = await _db.Updateable(updateObj).ExecuteCommandAsync();
+    if(response == 1)
+    {
+        return true;
+    }
+    return false;
+}
+
+
+
+public async Task<bool> IS_ExitISBN_In_CtfBookAsync(string ISBN)
+{
+    return await _db.Queryable<CtfBook>().AnyAsync(it => it.C_BookNumber == ISBN);
+}
+
+public async Task<List<SingleBook>> GetSingleBooksbyISBNAsync(string ISBN)
+{
+    var qry = _db.Queryable<SingleBook>().OrderBy(x => x.SingleBookNo);
+    if (!string.IsNullOrWhiteSpace(ISBN))
+    {
+        qry = qry.Where(w => w.CtfBook_ISBN == ISBN);
+    }
+    return await qry.ToListAsync();
+}
+
+public async Task<bool> AddSingleBookAsync(string _ISBN, string _singleBookNo, EnumBookStatus _bookStatus)
+{
+
+    var data = await _db.Queryable<SingleBook>().Where(it => it.CtfBook_ISBN == _ISBN).Where(it => it.SingleBookNo == _singleBookNo).AnyAsync();
+    if(data)
+    {
+        return false;
+    }
+
+    List<SingleBook> list = new List<SingleBook>();
+
+    list.Add(new SingleBook()
+    {
+        SingleBookNo = _singleBookNo,
+        BookStatus = _bookStatus,
+        CtfBook_ISBN = _ISBN,
+    });
+      
+    var ret = await _db.InsertNav(list)
+    .Include(z1 => z1.CtfBook)
+    .ExecuteCommandAsync();
+
+
+    if (ret)
+    {
+        return true;
+    }
+    return false;
+}
+
+public async Task<List<SingleBook>> GetSingBookByISBN_NoAsync(string ISBN, string singleBookNo)
+{
+    return await _db.Queryable<SingleBook>().Where(it => it.CtfBook_ISBN == ISBN && it.SingleBookNo == singleBookNo).ToListAsync();
+}
+
+public async Task<bool> IS_ExitNoAsync(string No, string ISBN)
+{
+    return await _db.Queryable<SingleBook>().Where(it => it.CtfBook_ISBN == ISBN).Where(it => it.SingleBookNo == No).AnyAsync();
+}
+
+public async Task<bool> UpdateSingleBookAsync(int _Id, string _ISBN, string _No, EnumBookStatus _bookStatus)
+{
+    var singleBook = new SingleBook();
+    singleBook.Id = _Id;
+    singleBook.CtfBook_ISBN = _ISBN;
+    singleBook.SingleBookNo = _No;
+    singleBook.BookStatus = _bookStatus;
+    var ret = await _db.Updateable(singleBook).ExecuteCommandAsync();
+
+    if (ret == 1)
+    {
+        return true;
+    }
+    return false;
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+SingleBookDate
+
+ public class SingleBookDate
+ {
+     public string SingleBookNo {  get; set; }
+     public string CtfBook_SIBN {  get; set; }
+     public EnumBookStatus BookStatus { get; set; }
+
+ }
+
+
+
+
+
+public class TempBookRequestData
+{
+    public string bookNumber { get; set; }
+    public string bookName { get; set; }
+    public string author { get; set; }
+    public decimal? unitPrice { get; set; }
+    public string press { get; set; }
+    public DateTime publicationDate { get; set; }
+    public string pressPhone { get; set; }
+    public string pressWeb { get; set; }
+    public DateTime CreatedTime { get; set; }
+    public string creater { get; set; }
+
+    public byte[] bookCover { get; set; }
+}
+
+public class TempBookRequestData3
+{
+    public string bookNumber { get; set; }
+    public string bookName { get; set; }
+    public string author { get; set; }
+}
+
+
+ public class CtfBookRequestsData
+ {
+     public string bookNumber { get; set; }
+     public string bookName { get; set; }
+     public string author { get; set; }
+     public decimal? unitPrice { get; set; }
+     public string press { get; set; }
+     public DateTime publicationDate { get; set; }
+     public string pressPhone { get; set; }
+     public string pressWeb { get; set; }
+     public DateTime createdTime { get; set; }
+     public string creater { get; set; }
+     public byte[] bookCover { get; set; }
+     public DateTime certTime { get; set; }
+     public string administrator { get; set; }
+ }
+
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+private readonly IBookService _bookService;
+
+private readonly ILogger<BookController> _logger;
+
+private readonly ISqlSugarClient _db;
+
+public BookController(IBookService bookService, ILogger<BookController> logger, ISqlSugarClient db)
+{
+    _bookService = bookService;
+    _logger = logger;
+   _db = db;
+}
+
+[HttpPost]
+[Route("get_tempbooks")]
+public async Task<List<TempBook>> GetTempBooksAsync()
+{
+
+	_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempBooksAsync接口");
+    return await _bookService.GetTempBooksAsync();
+}
+
+[HttpPost]
+[Route("get_tempbook_byid")]
+public async Task<TempBook> GetTempBookByIdAsync([FromForm] int id)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempBookByIdAsync接口");
+    return await _bookService.GetTempBookByIdAsync(id);
+}
+
+[HttpPost]
+[Route("get_ctfbooks")]
+public async Task<List<CtfBook>> GetCtfBooksAsync()
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetCtfBooksAsync接口");
+    return await _bookService.GetCtfBooksAsync();
+}
+
+
+[HttpPost]
+[Route("get_tempnna3")]
+public async Task<List<TempBook>> GetTempBooks3Async([FromForm] TempBookRequestData3 TBR)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempBooks3Async接口");
+    return await _bookService.GetTempBooks3Async(TBR.bookNumber, TBR.bookName, TBR.author);
+}
+
+
+[HttpPost]
+[Route("get_ctfnna3")]
+public async Task<List<CtfBook>> GetCtfBooks3Async([FromForm] TempBookRequestData3 TBR)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetCtfBooks3Async接口");
+    return await _bookService.GetCtfBooks3Async(TBR.bookNumber, TBR.bookName, TBR.author);
+}
+
+[HttpPost]
+[Route("add_tempbook")]
+public async Task<bool> AddTempBookAsync([FromForm] TempBookRequestData TBR)
+{
+
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了AddTempBookAsync接口");
+    return await _bookService.AddTempBookAsync(TBR.bookName, TBR.bookNumber, TBR.unitPrice
+        , TBR.author, TBR.press, TBR.publicationDate
+        , TBR.pressPhone, TBR.pressWeb, TBR.CreatedTime
+        , TBR.creater, TBR.bookCover);
+}
+
+[HttpPost]
+[Route("update_tempbook")]
+public async Task<bool> UpdateTempBookAsync([FromForm] int id, [FromForm] TempBookRequestData TBR, [FromForm] string feedBack)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了UpdateTempBookAsync接口");
+    return await _bookService.UpdateTempBookAsync(id, TBR.bookName, TBR.bookNumber
+        , TBR.unitPrice, TBR.author, TBR.press, TBR.publicationDate
+        , TBR.pressPhone, TBR.pressWeb, TBR.CreatedTime, TBR.creater, feedBack, TBR.bookCover);
+}
+
+[HttpPost]
+[Route("delete_tempbook")]
+public async Task<bool> DeleteTempBookAsync([FromForm] int id)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了DeleteTempBookAsync接口");
+    return await _bookService.DeleteTempBookAsync(id);
+}
+
+[HttpPost]
+[Route("get_tempbooks_by_creator")]
+public async Task<List<TempBook>> GetTempBooksByCreatorAsync([FromForm] string creater)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetTempBooksByCreatorAsync接口");
+    return await _bookService.GetTempBooksByCreatorAsync(creater);
+}
+
+[HttpPost]
+[Route("add_ctfbook")]
+public async Task<bool> AddCtfBookAsync([FromForm ]CtfBookRequestsData CBR)
+{
+  _logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了AddCtfBookAsync接口");
+    return await _bookService.AddCtfBookAsync(CBR.bookName, CBR.bookNumber
+        ,CBR.unitPrice, CBR.author
+        ,CBR.press, CBR.publicationDate
+        ,CBR.pressPhone, CBR.pressWeb
+        ,CBR.createdTime, CBR.creater
+        ,CBR.certTime, CBR.administrator
+        ,CBR.bookCover);
+}
+
+[HttpPost]
+[Route("get_ctfbook_by_isbn")]
+public async Task<CtfBook> GetCtfBookBy_ISBN_Async([FromForm]string bookNumber)
+{
+  
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetCtfBookBy_ISBN_Async接口");
+    return await _bookService.GetCtfBookBy_ISBN_Async(bookNumber);
+}
+
+[HttpPost]
+[Route("delete_ctfbook")]
+public async Task<bool> DeleteCtfBookAsync([FromForm] string bookNumber)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了DeleteCtfBookAsync接口");
+    return await _bookService.DeleteCtfBookAsync(bookNumber);
+}
+
+[HttpPost]
+[Route("change_feedback")]
+public async Task<bool> ChangeFeedBackAsync([FromForm]int id, [FromForm]string feedBack)
+{
+
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了ChangeFeedBackAsync接口");
+    return await _bookService.ChangeFeedBackAsync(id, feedBack);
+}
+
+[HttpPost]
+[Route("is_exitisbn_in_ctfbook")]
+public async Task<bool> IS_ExitISBN_In_CtfBookAsync([FromForm]string ISBN)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了IS_ExitISBN_In_CtfBookAsync接口");
+    return await _bookService.IS_ExitISBN_In_CtfBookAsync(ISBN);
+}
+
+[HttpPost]
+[Route("get_singlebooks_by_isbn")]
+public async Task<List<SingleBook>> GetSingleBooksbyISBNAsync([FromForm] string ISBN)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetSingleBooksbyISBNAsync接口");
+    return await _bookService.GetSingleBooksbyISBNAsync(ISBN);
+}
+
+[HttpPost]
+[Route("add_singlebook")]
+public async Task<bool> AddSingleBookAsync([FromForm] SingleBookDate singleBook)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了AddSingleBookAsync接口");
+    return await _bookService.AddSingleBookAsync(singleBook.CtfBook_SIBN, singleBook.SingleBookNo, singleBook.BookStatus);
+}
+
+[HttpPost]
+[Route("get_singlebook_by_isbn_and_no")]
+public async Task<List<SingleBook>> GetSingBookByISBN_NoAsync([FromForm]string ISBN, [FromForm]string singleBookNo)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了GetSingBookByISBN_NoAsync接口");
+    return await _bookService.GetSingBookByISBN_NoAsync(ISBN, singleBookNo);
+}
+
+[HttpPost]
+[Route("isexit_no")]
+public async Task<bool> IS_ExitNoAsync([FromForm]string No, [FromForm]string ISBN)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了IS_ExitNoAsync接口");
+    return await _bookService.IS_ExitNoAsync(No, ISBN);
+}
+
+[HttpPost]
+[Route("update_singlebook")]
+public async Task<bool> UpdateSingleBookAsync([FromForm] int Id, [FromForm] SingleBookDate singleBook)
+{
+_logger.LogInformation($"{App.HttpContext.GetRemoteIpAddressToIPv4()}----有人访问了UpdateSingleBookAsync接口");
+    return await _bookService.UpdateSingleBookAsync(Id, singleBook.CtfBook_SIBN, singleBook.SingleBookNo, singleBook.BookStatus);
+}
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+frmTempBooks
+
+dgvBooks.SelectionChanged += dataGridView1_SelectionChanged;
+
+ private async void dataGridView1_SelectionChanged(object sender, EventArgs e)
+ {
+     if (dgvBooks.SelectedRows.Count > 0)
+     {
+         var bookId = (int)dgvBooks.SelectedRows[0].Cells["ColId"].Value;
+         var book = await "http://localhost:5001/api/book/get_tempbook_byid"
+         .SetBody(new
+         {
+             id = bookId,
+         }, "application/x-www-form-urlencoded")
+         .PostAsAsync<SerializationClassT<TempBook>>();
+
+         if (book?.data.BookCover == null)
+         {
+             pictureBox1.Image = null;
+         }
+         else
+         {
+             var ImageBCD = book?.data.BookCover;
+             var Image = ReturnPhoto(ImageBCD);
+             pictureBox1.Image = Image;
+             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; 
+         }
+
+     }
+ }
+
+public static System.Drawing.Image ReturnPhoto(byte[] streamByte)
+{
+    System.IO.MemoryStream ms = new System.IO.MemoryStream(streamByte);
+    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+    return img;
+}
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+frmBookDetails
+
+pictureBox
+btnUploadImage
+
+ public partial class frmBookDetails : Form
+ {
+     public int pId = 0;
+     string Images = null;
+     public frmBookDetails()
+     {
+         InitializeComponent();
+         pictureBox.SizeMode = PictureBoxSizeMode.Zoom; 
+
+     }
+
+     protected override async void OnLoad(EventArgs e)
+     {
+         base.OnLoad(e);
+
+         if (pId == 0)
+         {
+             btnOperator.Text = "添加";
+         }
+         else
+         {
+             btnOperator.Text = "修改";
+
+
+
+             var book = await "http://localhost:5001/api/book/get_tempbook_byid"
+             .SetBody(new
+             {
+                 id = pId,
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClassT<TempBook>>();
+             tbBookName.Text = book?.data.BookName;
+             tbBookNumber.Text = book?.data.BookNumber;
+             tbBookPrice.Text = book?.data.UnitPrice.ToString();
+             tbBookAuthor.Text = book?.data.Author;
+             tbBookPress.Text = book?.data.Press;
+             dtpBookPublicationDate.Text = book?.data.PublicationDate.ToString();
+             tbBookPressNumber.Text = book?.data.PressPhone;
+             tbBookPressWeb.Text = book?.data.PressWebsite;
+             dtpBookcreatedTime.Text = book?.data.CreatedTime.ToString();
+             tbBookCreater.Text = book?.data.Creater;
+             if(book?.data.BookCover == null)
+             {
+                 pictureBox.Image = null;
+             }
+             else
+             {
+                 var ImageBCD = book?.data.BookCover;
+                 var Image = ReturnPhoto(ImageBCD);
+                 pictureBox.Image = Image;
+             }
+             var image = pictureBox.Image;
+             if(image != null)
+             {
+                 byte[] imageData = ImageToByteArray(image);
+                 Images = Convert.ToBase64String(imageData);
+             }
+             else
+             {
+                 Images = null;
+             }
+             
+
+         }
+     }
+
+     private void frmBookDetails_Load(object sender, EventArgs e)
+     {
+
+     }
+
+     private void btnUploadImage_Click(object sender, EventArgs e)
+     {
+         OpenFileDialog openDlg = new OpenFileDialog();
+         openDlg.Filter = "图片文件 (*.jpg, *.jpeg, *.png, *.gif)|*.jpg;*.jpeg;*.png;*.gif|所有文件 (*.*)|*.*";
+         if (openDlg.ShowDialog() == DialogResult.OK)
+         {
+             string selectedFilePath = openDlg.FileName;
+             pictureBox.Image = Image.FromFile(selectedFilePath);
+
+             byte[] imageBytes = ImageToByteArray(selectedFilePath);
+             Images = Convert.ToBase64String(imageBytes);
+
+         }
+
+     }
+
+     static byte[] ImageToByteArray(string imagePath)
+     {
+         using (Image image = Image.FromFile(imagePath))
+         using (MemoryStream ms = new MemoryStream())
+         {
+             image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+             return ms.ToArray();
+         }
+     }
+
+     public System.Drawing.Image ReturnPhoto(byte[] streamByte)
+     {
+         System.IO.MemoryStream ms = new System.IO.MemoryStream(streamByte);
+         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+         return img;
+     }
+
+     static byte[] ImageToByteArray(Image image)
+     {
+         using (MemoryStream memoryStream = new MemoryStream())
+         {
+             if(image == null)
+             {
+                 return null;
+             }
+             image.Save(memoryStream, image.RawFormat);
+             return memoryStream.ToArray();
+         }
+     }
+
+     private async void btnOperator_ClickAsync(object sender, EventArgs e)
+     {
+         var frmTempBooks = System.Windows.Forms.Application.OpenForms.OfType<frmTempBooks>().FirstOrDefault();
+
+         if (pId == 0)
+         {
+
+             decimal? _bookPrime;
+             decimal s;
+             if (string.IsNullOrEmpty(tbBookPrice.Text))
+             {
+                 _bookPrime = null;
+             }
+             else
+             {
+                 //s = decimal.Parse(tbBookPrice.Text);
+                 if (decimal.TryParse(tbBookPrice.Text, out s))
+                 {
+                     // 转换成功
+                     _bookPrime = s;
+                 }
+                 else
+                 {
+                     //转换失败
+                     MessageBox.Show("单价行请输入有效数字！");
+                     return;
+                 }
+
+             }
+
+             if (_bookPrime != null && Math.Abs(_bookPrime.Value) >= 10000000)
+             {
+                 MessageBox.Show("单价超过实际！");
+                 return;
+             }
+             var _bookName = tbBookName.Text.Trim();
+             var _bookNumber = tbBookNumber.Text.Trim();
+             //var bookPrime = decimal.Parse(tbBookPrice.Text.Trim());
+             var _bookAuthor = tbBookAuthor.Text.Trim();
+             var _bookPress = tbBookPress.Text.Trim();
+             var _bookPublicationDate = DateTime.Parse(dtpBookPublicationDate.Text.Trim());
+             var _bookPressNumber = tbBookPressNumber.Text.Trim();
+             var _bookPressWeb = tbBookPressWeb.Text.Trim();
+             var _bookCreatedTime = DateTime.Parse(dtpBookcreatedTime.Text.Trim());
+             var _bookCreater = tbBookCreater.Text.Trim();
+
+             var _bookCover = Images;
+
+             if (string.IsNullOrEmpty(_bookName))
+             {
+                 MessageBox.Show("图书名不能为空！");
+                 return;
+             }
+
+             if (string.IsNullOrEmpty(_bookNumber))
+             {
+                 MessageBox.Show("书本编号不能为空！");
+                 return;
+             }
+
+             if (string.IsNullOrEmpty(_bookAuthor))
+             {
+                 MessageBox.Show("作者名不能为空！");
+                 return;
+             }
+
+             if (string.IsNullOrEmpty(_bookCreater))
+             {
+                 MessageBox.Show("创建人不能为空！");
+                 return;
+             }
+
+
+             var ret = await "http://localhost:5001/api/book/add_tempbook"
+             .SetBody(new
+             {
+                 bookNumber = _bookNumber,
+                 bookName = _bookName,
+                 Author = _bookAuthor,
+                 UnitPrice = _bookPrime,
+                 Press = _bookPress,
+                 PublicationDate = _bookPublicationDate,
+                 PressPhone = _bookPressNumber,
+                 PressWeb = _bookPressWeb,
+                 CreatedTime = _bookCreatedTime,
+                 Creater = _bookCreater,
+                 bookCover = _bookCover,
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClass>();
+
+             if (ret.data)
+             {
+                 MessageBox.Show("添加成功");
+                 Images = null;
+                 await frmTempBooks!.QueryAsync();
+                 Close();
+             }
+             else
+             {
+                 MessageBox.Show("添加失败,该图书编号已存在！");
+             }
+         }
+         else
+         {
+             decimal? _bookPrime;
+             decimal s;
+             if (string.IsNullOrEmpty(tbBookPrice.Text))
+             {
+                 _bookPrime = null;
+             }
+             else
+             {
+                 //s = decimal.Parse(tbBookPrice.Text);
+                 if (decimal.TryParse(tbBookPrice.Text, out s))
+                 {
+                     // 转换成功
+                     _bookPrime = s;
+                 }
+                 else
+                 {
+                     //转换失败
+                     MessageBox.Show("单价行请输入有效数字！");
+                     return;
+
+                 }
+
+             }
+
+             if (_bookPrime != null && Math.Abs(_bookPrime.Value) >= 10000000)
+             {
+                 MessageBox.Show("单价超过实际！");
+                 return;
+             }
+
+             var _bookName = tbBookName.Text.Trim();
+             var _bookNumber = tbBookNumber.Text.Trim();
+             //var bookPrime = decimal.Parse(tbBookPrice.Text.Trim());
+             var _bookAuthor = tbBookAuthor.Text.Trim();
+             var _bookPress = tbBookPress.Text.Trim();
+             var _bookPublicationDate = DateTime.Parse(dtpBookPublicationDate.Text.Trim());
+             var _bookPressNumber = tbBookPressNumber.Text.Trim();
+             var _bookPressWeb = tbBookPressWeb.Text.Trim();
+             var _bookCreatedTime = DateTime.Parse(dtpBookcreatedTime.Text.Trim());
+             var _bookCreater = tbBookCreater.Text.Trim();
+             var _bookFeedBack = tbFeedBack.Text.Trim();
+             var _bookCover = Images;
+                 
+
+
+             if (string.IsNullOrEmpty(_bookName))
+             {
+                 MessageBox.Show("图书名不能为空！");
+                 return;
+             }
+
+             if (string.IsNullOrEmpty(_bookNumber))
+             {
+                 MessageBox.Show("书本编号不能为空！");
+                 return;
+             }
+
+             if (string.IsNullOrEmpty(_bookAuthor))
+             {
+                 MessageBox.Show("作者名不能为空！");
+                 return;
+             }
+
+             if (string.IsNullOrEmpty(_bookCreater))
+             {
+                 MessageBox.Show("创建人不能为空！");
+                 return;
+             }
+
+
+
+             var ret = await "http://localhost:5001/api/book/update_tempbook"
+             .SetBody(new
+             {
+                 id = pId,
+                 bookNumber = _bookNumber,
+                 bookName = _bookName,
+                 Author = _bookAuthor,
+                 UnitPrice = _bookPrime,
+                 Press = _bookPress,
+                 PublicationDate = _bookPublicationDate,
+                 PressPhone = _bookPressNumber,
+                 PressWeb = _bookPressWeb,
+                 CreatedTime = _bookCreatedTime,
+                 Creater = _bookCreater,
+                 FeedBack = _bookFeedBack,
+                 bookCover = _bookCover,
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClass>();
+
+             if (ret.data)
+             {
+                 MessageBox.Show("修改成功");
+                 Images = null;
+                 await frmTempBooks!.QueryAsync();
+                 Close();
+
+             }
+             else
+             {
+                 MessageBox.Show("修改失败, ISBN已存在！");
+             }
+         }
+     }
+
+     
+ }
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+frmBook（单本图书）
+
+封面  pictureBox1
+btnSingleBook
+
+ private void btnSingleBook_Click(object sender, EventArgs e)
+{
+	var currentRow = dgvBooks.CurrentRow;
+	if (currentRow == null)
+	{
+    		MessageBox.Show("请选择要操作的数据");
+    		return;
+	}
+	var ISBN = (string)currentRow.Cells["ColBookNumber"].Value;
+	var frm = Native.CreateInstance<frmSingleBook>();
+	frm.ISBN = ISBN;
+	frm.Show();
+}
+
+public static System.Drawing.Image ReturnPhoto(byte[] streamByte)
+{
+    System.IO.MemoryStream ms = new System.IO.MemoryStream(streamByte);
+    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+    return img;
+}
+
+
+private async void dataGridView1_SelectionChanged(object sender, EventArgs e)
+{
+    if (dgvBooks.SelectedRows.Count > 0)
+    {
+        var ISBN = (string)dgvBooks.SelectedRows[0].Cells["ColBookNumber"].Value;
+        var book = await "http://localhost:5001/api/book/get_ctfbook_by_isbn"
+        .SetBody(new
+        {
+            bookNumber = ISBN,
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClassT<CtfBook>>();
+
+        if (book?.data.C_BookCover == null)
+        {
+            pictureBox1.Image = null;
+        }
+        else
+        {
+            var ImageBCD = book?.data.C_BookCover;
+            var Image = ReturnPhoto(ImageBCD);
+            pictureBox1.Image = Image;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;         }
+
+    }
+}
+
+dgvBooks.SelectionChanged += dataGridView1_SelectionChanged;
+
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+frmSingleBook
+
+ColId
+ColISBN
+ColSingeBookNo
+ColBookStatus
+ColCtfBook
+
+public partial class frmSingleBook : Form
+{
+    public string ISBN = string.Empty;
+    public frmSingleBook()
+    {
+        InitializeComponent();
+
+        dgvBooks.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+        foreach (DataGridViewColumn item in this.dgvBooks.Columns)
+        {
+            item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            item.SortMode = DataGridViewColumnSortMode.NotSortable;
+        }
+    }
+
+    private async void frmSingleBook_Load(object sender, EventArgs e)
+    {
+        await QueryAsync();
+    }
+
+    public async Task QueryAsync()
+    {
+        var response = await "http://localhost:5001/api/book/get_singlebooks_by_isbn"
+        .SetBody(new
+        {
+            isbn = ISBN,
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClassT<List<SingleBook>>>();
+        dgvBooks.DataSource = response.data;
+    }
+
+    private async void btnReserve_Click(object sender, EventArgs e)
+    {
+        var _no = tbNO.Text.Trim();
+        var isExit = await "http://localhost:5001/api/book/isexit_no"
+        .SetBody(new
+        {
+            no = _no,
+            isbn = ISBN,
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClass>();
+
+        if(!isExit.data)
+        {
+            MessageBox.Show("输入单本图书号不存在！");
+            return;
+        }
+        else
+        {
+            var data = await "http://localhost:5001/api/book/get_singlebook_by_isbn_and_no"
+            .SetBody(new
+            {
+                singleBookNo = _no,
+                isbn = ISBN,
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<List<SingleBook>>>();
+
+            var ret = data.data;
+
+            foreach (SingleBook book in ret)
+            {
+                if (book.BookStatus == EnumBookStatus.可出借)
+                {
+                    var response = await "http://localhost:5001/api/book/update_singlebook"
+                    .SetBody(new
+                    {
+                        Id = book.Id,
+                        CtfBook_SIBN = ISBN,
+                        SingleBookNo = book.SingleBookNo,
+                        BookStatus = EnumBookStatus.被预订,
+                    }, "application/x-www-form-urlencoded")
+                    .PostAsAsync<SerializationClass>();
+                    if (response.data)
+                    {
+                        MessageBox.Show("预订成功，请等待管理员的通过。");
+                        await QueryAsync();
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show("预订失败。");
+                    }
+                }
+                else if (book.BookStatus == EnumBookStatus.被预订)
+                {
+                    MessageBox.Show("该编号图书已被预订！");
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("该编号图书有人借阅中！");
+                    return;
+                }
+            }
+        }
+
+    }
+
+    private async void btnSendBack_Click(object sender, EventArgs e)
+    {
+        var _no = tbNO.Text.Trim();
+        var isExit = await "http://localhost:5001/api/book/isexit_no"
+        .SetBody(new
+        {
+            no = _no,
+            isbn = ISBN,
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClass>();
+        if (!isExit.data)
+        {
+            MessageBox.Show("输入单本图书号不存在！");
+            return;
+        }
+        else
+        {
+            var data = await "http://localhost:5001/api/book/get_singlebook_by_isbn_and_no"
+            .SetBody(new
+            {
+                singleBookNo = _no,
+                isbn = ISBN,
+            }, "application/x-www-form-urlencoded")
+            .PostAsAsync<SerializationClassT<List<SingleBook>>>();
+
+            var ret = data.data;
+
+            foreach (SingleBook book in ret)
+            {
+                if (book.BookStatus == EnumBookStatus.可出借)
+                {
+                    MessageBox.Show("该编号图书并不是您所借阅的图书！");
+                    return;
+                }
+                else if(book.BookStatus == EnumBookStatus.被预订)
+                {
+                    MessageBox.Show("该编号图书已被预订，您无法进行操作！");
+                    return;
+                }
+                else
+                {
+                    var response = await "http://localhost:5001/api/book/update_singlebook"
+                    .SetBody(new
+                    {
+                        Id = book.Id,
+                        CtfBook_SIBN = ISBN,
+                        SingleBookNo = book.SingleBookNo,
+                        BookStatus = EnumBookStatus.可出借,
+                    }, "application/x-www-form-urlencoded")
+                    .PostAsAsync<SerializationClass>();
+                    if (response.data)
+                    {
+                        MessageBox.Show("归还成功，期待您的下次订阅！");
+                        await QueryAsync();
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show("归还失败。");
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void btnReturn_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+frmBookAdmin
+
+单本图书 btnSingleBook
+
+private async void btnSingleBook_Click(object sender, EventArgs e)
+{
+	var currentRow = dgvBooks.CurrentRow;
+	if (currentRow == null)
+	{
+    		MessageBox.Show("请选择要操作的数据");
+    		return;
+	}	
+
+	if(currentRow.Cells["ColImage"].Value == approved)
+	{
+    		var ISBN = (string)currentRow.Cells["ColBookNumber"].Value;
+    		var frm = Native.CreateInstance<frmSingleBook>();
+    		frm.ISBN = ISBN;
+    		frm.Show();
+	}
+	else
+	{
+   		 MessageBox.Show("该书还未认证，无法进行单本图书操作。");
+    		return;
+	}
+}
+
+
+
+dgvBooks.SelectionChanged += dataGridView1_SelectionChanged;
+
+private async void dataGridView1_SelectionChanged(object sender, EventArgs e)
+{
+    if (dgvBooks.SelectedRows.Count > 0)
+    {
+        var bookId = (int)dgvBooks.SelectedRows[0].Cells["ColId"].Value;
+        var book = await "http://localhost:5001/api/book/get_tempbook_byid"
+        .SetBody(new
+        {
+            id = bookId,
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClassT<TempBook>>();
+
+        if (book?.data.BookCover == null)
+        {
+            pictureBox1.Image = null;
+        }
+        else
+        {
+            var ImageBCD = book?.data.BookCover;
+            var Image = ReturnPhoto(ImageBCD);
+            pictureBox1.Image = Image;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; 
+        }
+
+    }
+}
+
+
+ public static System.Drawing.Image ReturnPhoto(byte[] streamByte)
+ {
+     System.IO.MemoryStream ms = new System.IO.MemoryStream(streamByte);
+     System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+     return img;
+ }
+
+//替换
+private async void btnAccess_Click(object sender, EventArgs e)
+{
+    if (_id.Count <= 0)
+    {
+        MessageBox.Show("请勾选要操作的数据行！");
+        return;
+    }
+    int[] array = _id.ToArray();
+    _id.Clear();
+
+    foreach (int value in array)
+    {
+        var book = await "http://localhost:5001/api/book/get_tempbook_byid"
+        .SetBody(new
+        {
+            id = value
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClassT<TempBook>>();
+
+        if (book.data == null) return;
+
+        var response = await "http://localhost:5001/api/book/get_ctfbook_by_isbn"
+        .SetBody(new
+        {
+            bookNumber = book.data.BookNumber
+        }, "application/x-www-form-urlencoded")
+       .PostAsAsync<SerializationClassT<CtfBook>>();
+
+        if (response.data != null)
+        {
+            MessageBox.Show("所选书籍中有部分已认证！");
+            await QueryAsync();
+            return;
+        }
+
+        var _bookCover = string.Empty;
+        if (book?.data?.BookCover == null)
+        {
+            _bookCover = null;
+        }
+        else
+        {
+            _bookCover = Convert.ToBase64String(book.data.BookCover);
+        }
+
+
+        await "http://localhost:5001/api/book/add_ctfbook"
+        .SetBody(new
+        {
+            bookName = book.data.BookName,
+            bookNumber = book.data.BookNumber,
+            unitPrice = book.data.UnitPrice,
+            author = book.data.Author,
+            press = book.data.Press,
+            publicationDate = book.data.PublicationDate,
+            pressPhone = book.data.PressPhone,
+            pressWeb = book.data.PressWebsite,
+            createdTime = book.data.CreatedTime,
+            creater = book.data.Creater,
+            certTime = DateTime.Now,
+            administrator = frmAdminLogin.creatorName,
+            bookCover = _bookCover,
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClass>();
+
+    }
+    MessageBox.Show("所选书籍均已认证！");
+
+    await QueryAsync();
+
+
+    return;
+
+}
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+frmSingleBook
+
+ColPending
+ColId
+ColISBN
+ColSingeBookNo
+ColBookStatus
+ColCtfBook
+
+btnPass
+
+
+public partial class frmSingleBook : Form
+{
+    public string ISBN = string.Empty;
+    Image handled = Properties.Resources.待处理;
+    Image done = Properties.Resources.无需处理;
+    public frmSingleBook()
+    {
+        InitializeComponent();
+
+        dgvSingleBook.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+        foreach (DataGridViewColumn item in this.dgvSingleBook.Columns)
+        {
+            item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            item.SortMode = DataGridViewColumnSortMode.NotSortable;
+        }
+
+    }
+
+    private async void frmSingleBook_Load(object sender, EventArgs e)
+    {
+        await QueryAsync();
+        
+    }
+
+
+
+    public async Task QueryAsync()
+    {
+        var response = await "http://localhost:5001/api/book/get_singlebooks_by_isbn"
+        .SetBody(new
+        {
+            isbn = ISBN,
+        }, "application/x-www-form-urlencoded")
+        .PostAsAsync<SerializationClassT<List<SingleBook>>>();
+        dgvSingleBook.DataSource = response.data;
+
+        foreach (DataGridViewRow row in dgvSingleBook.Rows)
+        {
+            var status = row.Cells["ColBookStatus"].Value.ToString();          
+            if (status == EnumBookStatus.可出借.ToString() || status == EnumBookStatus.已借出.ToString())
+            {
+                row.Cells["ColPending"].Value = done;
+            }
+            else
+            {
+                row.Cells["ColPending"].Value = handled;
+            }
+        }
+    }
+
+    private void btnAdd_Click(object sender, EventArgs e)
+    {
+
+        var frm = Native.CreateInstance<frmAddSingleBook>();
+        frm.ISBN = ISBN;
+        frm.Show();
+
+
+    }
+
+    private async void btnSelect_Click(object sender, EventArgs e)
+    {
+        await QueryAsync();
+    }
+
+    private void btnReturn_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    private async void btnPass_Click(object sender, EventArgs e)
+    {
+        var currentRow = dgvSingleBook.CurrentRow;
+                if (currentRow == null)
+                {
+                    MessageBox.Show("请选择要操作的数据");
+                    return;
+                }
+                var _Id = Convert.ToInt32(currentRow.Cells["ColId"].Value);
+                var _ISBN = (string)currentRow.Cells["ColISBN"].Value;
+                var _No = (string)currentRow.Cells["ColSingeBookNo"].Value;
+
+                var response = await "http://localhost:5001/api/book/update_singlebook"
+                    .SetBody(new
+                    {
+                        Id = _Id,
+                        CtfBook_SIBN = _ISBN,
+                        SingleBookNo = _No,
+                        BookStatus = EnumBookStatus.已借出,
+                    }, "application/x-www-form-urlencoded")
+                    .PostAsAsync<SerializationClass>();
+                if (response.data)
+                {
+                    MessageBox.Show("已通过！");
+                    await QueryAsync();
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("该记录无需操作。");
+                    return;
+                }
+
+    }
+
+}
+
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+frmAddSingleBook
+
+ public partial class frmAddSingleBook : Form
+ {
+     public string ISBN = string.Empty;
+     public frmAddSingleBook()
+     {
+         InitializeComponent();
+     }
+
+     private void btnReturn_Click(object sender, EventArgs e)
+     {
+         Close();
+     }
+
+     protected override void OnLoad(EventArgs e)
+     {
+         base.OnLoad(e);
+         tbISBN.Text = ISBN;
+     }
+
+         private async void btnOK_Click(object sender, EventArgs e)
+     {
+         var frmSingleBook = System.Windows.Forms.Application.OpenForms.OfType<frmSingleBook>().FirstOrDefault();
+        
+         var _SingleBookNo = tbSingleBookNo.Text.Trim();
+         var _ISBN = tbISBN.Text.Trim();
+         var _Status = EnumBookStatus.可出借;
+         var response = await "http://localhost:5001/api/book/add_singlebook"
+             .SetBody(new
+             {
+                 SingleBookNo = _SingleBookNo,
+                 CtfBook_SIBN = _ISBN,
+                 BookStatus = _Status,
+             }, "application/x-www-form-urlencoded")
+             .PostAsAsync<SerializationClass>();
+
+         if (response.data)
+         {
+             MessageBox.Show("添加成功");
+             await frmSingleBook!.QueryAsync();
+         }
+         else
+         {
+             MessageBox.Show("添加失败,该编号已存在！");
+         }
+
+
+     }
+ }
+
+
